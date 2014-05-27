@@ -45,7 +45,7 @@ void MainWindow::computeButtonReleased(  ) {
     while (d_iterNumberSpinBox->value()<d_iterNumberSpinBox->maximum())
     {
         d_iterNumberSpinBox->setValue(d_iterNumberSpinBox->value()+1);
-        plottingWidget->repaint();
+        repaint();
     }
 }
 
@@ -115,7 +115,7 @@ void MainWindow::createPlots() {
             QString key=ord+":"+abs;
 
             Plot * d_plot = new Plot( key, plottingWidget );
-            d_plot->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
+            d_plot->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
             playout->setColumnStretch(c-1,1);
             playout->setRowStretch(l,1);
 
@@ -134,7 +134,7 @@ void MainWindow::createPlots() {
             QString key=ord+":"+abs;
 
             Plot * d_plot = new Plot( key, plottingWidget );
-            d_plot->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
+            d_plot->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
             olayout->setColumnStretch(c-1,1);
             olayout->setRowStretch(l,1);
 

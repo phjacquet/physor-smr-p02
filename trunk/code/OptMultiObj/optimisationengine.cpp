@@ -4,12 +4,14 @@
 
 #include "problem_a.h"
 #include "problem_b.h"
+#include "problem_script.h"
 
 OptimisationEngine::OptimisationEngine()
 {
-    sizeOfPopulationIni=200 ;
-    sizeOfPopulationTarget=1000;
-    problem = new Problem_B ;
+    sizeOfPopulationIni=100 ;
+    sizeOfPopulationTarget=100;
+    problem = new Problem_ShScriptEval("/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/data") ;
+    //problem = new Problem_B() ;
 }
 
 OptimisationEngine::~OptimisationEngine()
@@ -50,6 +52,7 @@ void OptimisationEngine::iterate( int itNumber_l ) {
 
 std::vector<Individual> OptimisationEngine::nonDominatedFront( std::vector<Individual> & setOfIndividuals ) {
     // non domination order definition
+    qDebug()<<"Select non dominated individuals upon "<<setOfIndividuals.size()<<" mutated individuals";
     std::vector<Individual> rs;
 
     for (unsigned i=0;i<setOfIndividuals.size();i++) {
@@ -118,6 +121,9 @@ void OptimisationEngine::init(  ) {
         rs.push_back(problem->generateIndividual());
         problem->evaluateIndividual(rs.back()) ;
     }
+
+
+
     std::map<std::string,std::vector<Individual> > rsm ;
     rsm["nonDominatedFront"]=nonDominatedFront(rs);
     rsm["nonDominatedDecFront"]=decimateFront(sizeOfPopulationTarget,rsm["nonDominatedFront"]);
@@ -133,12 +139,12 @@ void OptimisationEngine::nextIteration(  ) {
     qDebug()<<"New generation by mutation upon "<<nonDominatedQSelectedIndividualsNumber<<" non dominated individuals";
     double multiplicity=double(sizeOfPopulationTarget)/double(rsNew.size()) ;
     int i_multiplicity=int(multiplicity) ;
-    qDebug()<<"mult = "<< multiplicity<<" - > "<<i_multiplicity;
+    qDebug()<<"multiplicity = "<< multiplicity<<" - > "<<i_multiplicity;
     for (unsigned i=0;i<nonDominatedQSelectedIndividualsNumber;i++) {
             for (unsigned k=0;k<i_multiplicity || k<1; k++) {
                 //double radius = rsNew[i].nearestIndividualDistance*2 ;
                 //if (historySetOfIndidual.size()<10) radius=0.1 ;
-                double radius = 0.1 ;
+                double radius = 0.2*qrand()/double(RAND_MAX) ;
 
                 Individual m=rsNew[i].mutation(radius) ;
                 rsNew.push_back(m) ;
@@ -154,6 +160,11 @@ void OptimisationEngine::nextIteration(  ) {
     rsm["nonDominatedFront"]=nonDominatedFront(rsNew);
     rsm["nonDominatedDecFront"]=decimateFront(sizeOfPopulationTarget,rsm["nonDominatedFront"]);
     rsm["all"]=rsNew;
+
+    //keep N last individuals
+    //rsm["nonDominatedFront"].insert(rsm["nonDominatedFront"].end(),historySetOfIndidual.back()["nonDominatedFront"].begin(),historySetOfIndidual.back()["nonDominatedFront"].end());
+    //unsigned newHistSize=5*sizeOfPopulationTarget ;
+    //if (rsm["nonDominatedFront"].size()>newHistSize) rsm["nonDominatedFront"].resize(newHistSize) ;
 
     historySetOfIndidual.push_back(rsm);
 }

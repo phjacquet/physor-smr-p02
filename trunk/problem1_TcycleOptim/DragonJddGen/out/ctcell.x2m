@@ -1,0 +1,100 @@
+LINKED_LIST
+  LIBMIX   LIBMIXS
+  GCELL    
+  TRACK SYS FLUX
+  EDC
+  DATABASE DBC
+  ;
+
+SEQ_ASCII
+  CTDB.db ;
+
+MODULE
+  GEO: LIB: 
+  SHI: USS: 
+  SYBILT: EXCELT: ASM: FLU: EDI:
+  DELETE: END:
+  PSP: UTL: COMPO: EVO:
+  ;
+
+SEQ_BINARY 
+  ;
+
+LIBMIX := LIB: :: EDIT 0
+     NMIX 5
+     CTRA WIMS
+     SUBG
+     ANIS 2
+     DEPL LIB: DRAGON FIL: DLIB_J3XMAS
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS
+
+* Pastille de Poison
+  MIX 1 1000.0
+     F19 = 'F19'        2.17E+01
+     B10 = 'B10'      1.45E+01
+     B11 = 'B11'      5.79E+00
+
+* Homogeneous fuel
+  MIX 5 1000.0
+    O16   =   'O16'   2.87E-03
+    O17   =   'O17'   1.09E-06
+    U238   =   'U238'   1.03E-03 1
+    Pu238   =   'Pu238'   5.25E-06
+    Pu239   =   'Pu239'   2.28E-04 1
+    Pu240   =   'Pu240'   9.37E-05
+    Pu241   =   'Pu241'   5.61E-05
+    Pu242   =   'Pu242'   1.90E-05
+    He4   =   'He4'   3.53E-05
+    C0   =   'C0'   4.37E-02
+    Cr52   =   'Cr52'   2.54E-03
+    Fe56   =   'Fe56'   1.56E-02
+
+;
+
+GCELL := GEO: ::  TUBE 5
+  R+ REFL 
+     RADIUS 0.0 1.500 1.550 1.600 1.650 10.
+     MIX 1 3 2 4 5 
+ ;
+ 
+TRACK := SYBILT: GCELL ::
+  TITLE 'Fuel'
+  EDIT 1 MAXR 30 ;
+
+LIBMIXS := USS: LIBMIX TRACK  :: EDIT 1  ;
+
+SYS := ASM: LIBMIXS TRACK ;
+
+FLUX := FLU: SYS LIBMIXS TRACK  ::
+     TYPE B B1 PNL
+     EXTE 100 1E-4 THER 5 1E-4 ;
+
+EDC := EDI: LIBMIXS TRACK FLUX ::
+  EDIT 0
+  MERG MIX 1 1 1 2 2 
+  COND    7.4080E06 
+          3.3550E03 
+          6.1440E01 
+          2.3800E00  
+          1.2000E-01
+          1.0000E-02
+  MICR ALL
+  SAVE ON 'FCCg' ;
+
+DATABASE := COMPO: :: 
+     STEP UP 'ControlTube' 
+     COMM  'generic' ENDC
+     PARA 'Temp' VALU REAL
+     INIT 
+     ;
+
+DBC   := DATABASE ;
+
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'ControlTube'
+     Temp 1000.0
+     ;
+
+CTDB.db   := DBC ;
+
+END: ;

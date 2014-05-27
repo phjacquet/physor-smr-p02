@@ -1,0 +1,129 @@
+LINKED_LIST
+  LIBMIX   LIBMIXS
+  GCELL    
+  TRACK SYS FLUX
+  EDC
+  DATABASE DBC
+  ;
+
+SEQ_ASCII
+  FC34.M3.db ;
+
+SEQ_BINARY 
+     TRACK_FIL ;
+
+MODULE
+  GEO: LIB: 
+  SHI: USS: 
+  SYBILT: EXCELT: ASM: FLU: EDI:
+  DELETE: END:
+  PSP: UTL: COMPO: EVO:
+  ;
+
+SEQ_BINARY 
+  ;
+
+LIBMIX := LIB: :: EDIT 0
+     NMIX 2
+     CTRA WIMS
+*     SUBG
+     ANIS 2
+     DEPL LIB: DRAGON FIL: DLIB_J3XMAS
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS
+
+* Rod+He
+  MIX 1 1000.0
+
+C0 = 'C0' 2.7106E-02
+Si28 = 'Si28' 7.2039E-04
+Si29 = 'Si29' 3.6559E-05
+Si30 = 'Si30' 2.4139E-05
+
+O16 = 'O16' 1.9274E-02
+O17 = 'O17' 7.3243E-06
+
+U238 = 'U238'    6.363060E-03  1
+Pu238 = 'Pu238'  3.277940E-06  1
+Pu239 = 'Pu239'  2.622352E-03  1
+Pu240 = 'Pu240'  5.539719E-04  1
+Pu241 = 'Pu241'  8.850438E-05  1
+Pu242 = 'Pu242'  9.833820E-06  1
+Am241 = 'Am241'  0.000000E+00  1
+
+Mn55 = 'Mn55' 5.7348E-06
+P31 = 'P31' 4.4604E-07
+S32 = 'S32' 3.8232E-07
+Si28 = 'Si28' 2.5488E-06
+Ni58 = 'Ni58' 8.2838E-06
+Cr52 = 'Cr52' 8.7292E-04
+Mo95 = 'Mo95' 1.9116E-05
+Ti48 = 'Ti48' 6.2445E-05
+Al27 = 'Al27' 1.9116E-06
+N14 = 'N14' 2.8037E-06
+Y89 = 'Y89' 1.7841E-05
+Fe56 = 'Fe56' 5.3621E-03
+  
+* mix for depl. bug 
+  MIX 2 1000.0
+  He4 =  'He4'    1.0E-05 
+
+;
+
+GCELL := GEO: ::  HOMOGE
+     MIX 1
+ ;
+ 
+TRACK := SYBILT: GCELL ::
+  TITLE 'Fuel'
+  EDIT 1 MAXR 30 ;
+
+*LIBMIXS := USS: LIBMIX TRACK :: EDIT 1  ;
+LIBMIXS := SHI: LIBMIX TRACK :: EDIT 1 NOLJ ;
+
+
+SYS := ASM: LIBMIXS TRACK ;
+
+FLUX := FLU: SYS LIBMIXS TRACK  ::
+     TYPE B B1 PNL
+     EXTE 100 1E-4 THER 5 1E-4 ;
+
+EDC := EDI: LIBMIXS TRACK FLUX ::
+  EDIT 0
+  MERG COMP 
+  COND  7.4080E06     
+          3.3550E03  
+          6.1440E01  
+          2.3800E00  
+          1.2000E-01 
+          1.0000E-02
+  MICR ALL
+  SAVE ON 'FCCg' ;
+
+DATABASE := COMPO: :: 
+     STEP UP 'BOL InFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+     STEP UP 'BOL ExFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+;
+DBC   := DATABASE ;
+
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'BOL InFuel'
+     TempFuel 1000.0
+     TempSleeve 1000.0
+     ;
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'BOL ExFuel'
+     TempFuel 1000.0
+     TempSleeve 1000.0
+     ;
+
+FC34.M3.db   := DBC ;
+
+END: ;

@@ -2,12 +2,23 @@
 #include <QtMath>
 #include <QDebug>
 
+Individual::Individual()
+{
+    paramDim=0;
+    objDim=0;
+    NonDominationOrder=0;
+    nearestIndividualDistance=0.;
+    hasBeenEvaluated=false;
+}
+
+
 Individual::Individual(int paramDim_l, int objDim_l) : parameters(paramDim_l), objectives(objDim_l)
 {
     paramDim=paramDim_l;
     objDim=objDim_l;
     NonDominationOrder=0;
     nearestIndividualDistance=0.;
+    hasBeenEvaluated=false;
 }
 
 int Individual::getParamDim() {
@@ -17,9 +28,18 @@ int Individual::getObjDim() {
     return objDim;
 }
 
+bool Individual::getEvaluationStatus() {
+    return hasBeenEvaluated ;
+}
+
+void Individual::setEvaluationStatus(bool evalStat) {
+    hasBeenEvaluated=evalStat ;
+}
+
 bool Individual::isDominatedBy(Individual& m) {
     if (paramDim!=m.paramDim) {qDebug()<<"bool Individual::isDominatedBy(Individual& m) bad arguments"; exit(0);}
-
+    if (getEvaluationStatus()==false) return true ;
+    if (m.getEvaluationStatus()==false) return false ;
     bool mDominate=true ;
     for (unsigned oId=0;oId<objectives.size()  && mDominate;oId++) {
         if (objectives[oId]<=m.objectives[oId]) mDominate=false;

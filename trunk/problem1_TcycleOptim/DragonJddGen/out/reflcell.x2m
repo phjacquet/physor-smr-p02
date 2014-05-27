@@ -1,0 +1,99 @@
+LINKED_LIST
+  LIBIFUEL   
+  LIBMIX
+  GCELL    
+  TRACK SYS FLUX
+  EDC
+  DATABASE DBC
+  
+  ;
+
+SEQ_ASCII
+  REFL.db
+  ;
+
+MODULE
+  GEO: LIB: 
+  SHI: USS: 
+  SYBILT: SNT: ASM: FLU: EDI:
+  DELETE: END:
+  PSP: UTL: COMPO: EVO: NCR:
+  ;
+
+SEQ_BINARY 
+  ;
+
+LIBMIX := LIB: :: EDIT 0
+     NMIX 1
+     CTRA WIMS
+     ANIS 2
+*     DEPL LIB: DRAGON FIL: DLIB_J3XMAS
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS
+
+* Reflecteur Mobile - ACIER ODS plein
+  MIX 1 1000.0
+     O16 = 'O16'      6.0E-13 
+     U238 = 'U238'    2.5E-13  1
+     Pu239 = 'Pu239'  5.0E-14  1
+
+     C0   = 'C0'    2.3817E-05
+     Mn55 = 'Mn55'  7.1451E-05
+     P31  = 'P31'   5.5573E-06
+     S32  = 'S32'   4.7634E-06
+     Si28 = 'Si28'  3.1756E-05
+     Ni58 = 'Ni58'  1.0321E-04
+     Cr52 = 'Cr52'  1.0876E-02
+     Mo95 = 'Mo95'  2.3817E-04
+     Ti48 = 'Ti48'  7.7802E-04
+     Al27 = 'Al27'  2.3817E-05
+     B10  = 'B10'   7.1451E-07
+     N14  = 'N14'   3.4932E-05
+     O16  = 'O16'   1.6672E-04
+     Y89  = 'Y89'   2.2229E-04
+     Fe56 = 'Fe56'  6.6808E-02 
+     H1 = 'H1' 1.23655E-01
+;
+
+
+GCELL := GEO: ::  HOMOGE
+     MIX 1
+;
+
+TRACK := SYBILT: GCELL ::
+  TITLE 'GRMCELL' ;
+
+SYS := ASM: LIBMIX TRACK  ;
+
+FLUX := FLU: SYS LIBMIX TRACK  ::
+     TYPE K
+     EXTE 100 1E-5 THER 5 1E-4 ;
+
+EDC := EDI: LIBMIX TRACK FLUX ::
+  EDIT 0
+  MERG MIX 1
+  COND 7.4080E06     
+          3.3550E03  
+          6.1440E01  
+          2.3800E00  
+          1.2000E-01 
+          1.0000E-02
+  MICR ALL
+  SAVE ON 'RMNC' ;
+
+DATABASE := COMPO: :: 
+     STEP UP 'BOL Refl' 
+     COMM  'generic' ENDC
+     PARA 'Temp' VALU REAL
+     INIT 
+     ;
+
+DBC   := DATABASE ;
+
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'BOL Refl'
+     Temp 1000.
+     ;
+
+REFL.db   := DBC ;
+     
+END: ;

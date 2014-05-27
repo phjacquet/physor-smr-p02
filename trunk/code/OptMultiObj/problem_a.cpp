@@ -7,6 +7,8 @@ Problem_A::Problem_A() : AbstractProblem(2,2)
 
 /*
 void Problem_A::evaluateIndividual(Individual & r) {
+    if (r.getEvaluationStatus()) return;
+
     double x,y,x0,y0,x1,y1,R0,R1,RM0,RM1;
     x=r.parameters[0] ;
     y=r.parameters[1] ;
@@ -22,11 +24,16 @@ void Problem_A::evaluateIndividual(Individual & r) {
 
     r.objectives[0]=(RM0-R0)*(RM0-R0) ;
     r.objectives[1]=(RM1-R1)*(RM1-R1) ;
+
+    r.setEvaluationStatus(true);
+    numberOfEvaluations++;
 }
 */
 
 /*
 void Problem_A::evaluateIndividual(Individual & r) {
+    if (r.getEvaluationStatus()) return;
+
     //arbitaire : f0 est minimisé pour ||M(x,y) - M0||=R0.
     //arbitaire : f1 est minimisé pour ||M(x,y) - M1||=R1.
     double x,y,x0,y0,x1,y1,R0,R1,RM0,RM1;
@@ -44,10 +51,15 @@ void Problem_A::evaluateIndividual(Individual & r) {
 
     r.objectives[0]=(RM0-R0)*(RM0-R0) ;
     r.objectives[1]=(RM1-R1)*(RM1-R1) ;
+
+    r.setEvaluationStatus(true);
+    numberOfEvaluations++;
 }
 */
 
 void Problem_A::evaluateIndividual(Individual & r) {
+    if (r.getEvaluationStatus()) return;
+
     double x,y,x0,y0,x1,y1,R0,R1,RM0,RM1;
     x=r.parameters[0] ;
     y=r.parameters[1] ;
@@ -55,6 +67,7 @@ void Problem_A::evaluateIndividual(Individual & r) {
     r.objectives[0]=4*x*x+y*y+x*y ;
     r.objectives[1]=(x-1)*(x-1)+3*(y-1)*(y-1) ;
 
+    r.setEvaluationStatus(true);
     numberOfEvaluations++;
 }
 
