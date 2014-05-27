@@ -1,0 +1,88 @@
+_________________________________________
+Generateur de jeu de donnees pour Dragon - test
+Version X.X
+_________________________________________
+Recherche d enrichissement tel que keff (t=0) = 1.10000
+4.16user 0.03system 0:04.26elapsed 98%CPU (0avgtext+0avgdata 112064maxresident)k
+0inputs+504outputs (0major+7288minor)pagefaults 0swaps
+mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
+mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
+mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
+mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
+mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
+3.80user 0.05system 0:03.90elapsed 98%CPU (0avgtext+0avgdata 112096maxresident)k
+0inputs+464outputs (0major+7290minor)pagefaults 0swaps
+mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
+mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
+mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
+mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
+mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
+4.06user 0.07system 0:04.18elapsed 98%CPU (0avgtext+0avgdata 112096maxresident)k
+0inputs+464outputs (0major+7291minor)pagefaults 0swaps
+mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
+mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
+mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
+mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
+mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
+
+real	0m12.729s
+user	0m12.045s
+sys	0m0.272s
+E	E1	E2	KEFF
+8	8	7	7.664909E-01
+20	21	18	1.360612E+00
+14.00000000000000000000	15	13	1.118494E+00
+13.6848	14	12	STOP
+Fin de la recherche d enrichissement
+geometry.core.pl 
+546.000 ./files/DragonCoreGeom_TGE.templ
+execute core with /home/physor/bin/POLYMTL/VERSION4/Version4_lgpl/Donjon/bin/Linux i686_gfortran/Donjon
+use the existing directory run
+RunDirectory: /tmp/rundir24
+/tmp/rundir24
+/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/data/core.access script terminated
+link DLIB_J3 to /home/physor/data/neutro/VERSION4/LIB/draglibJeff3p1p2SHEM295
+link DLIB_J3XMAS to /home/physor/data/neutro/VERSION4/LIB/draglibJef2p2 DLIB_J3XMAS
+code
+CTDB.db
+DLIB_J3
+DLIB_J3XMAS
+FCIDB.db
+FCODB.db
+FLUX.db
+HEDB.db
+mydata
+REDB.db
+tdraglib access script terminated
+15.36user 0.04system 0:15.55elapsed 99%CPU (0avgtext+0avgdata 119872maxresident)k
+0inputs+1568outputs (0major+8448minor)pagefaults 0swaps
+end of execution
+mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
+mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
+mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
+mv: `FLUX.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FLUX.db' are the same file
+mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
+mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
+the listing is located on ./run
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       491
+
+->@END MODULE   : EDI:        
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+
+ @END MODULE -> EDI:        
+
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+
+
+ @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
+ @CHECK FOR WARNINGS IN LISTING
+ @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL
+0	1.075370E+00
+3.650000E+02	1.070754E+00
+7.300000E+02	1.066278E+00
+1.825000E+03	1.054338E+00
+5.475000E+03	1.022110E+00
+1.095000E+04	9.818232E-01
+65.42655240390360000000 13.00000000000000000000 11827

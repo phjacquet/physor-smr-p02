@@ -1,0 +1,101 @@
+LINKED_LIST
+  LIBMIX   LIBMIXS
+  GCELL    
+  TRACK SYS FLUX
+  EDC
+  DATABASE DBC
+  ;
+
+SEQ_ASCII
+  VAR.G.filename ;
+
+SEQ_BINARY 
+     TRACK_FIL ;
+
+MODULE
+  GEO: LIB: 
+  SHI: USS: 
+  SYBILT: EXCELT: ASM: FLU: EDI:
+  DELETE: END:
+  PSP: UTL: COMPO: EVO:
+  ;
+
+SEQ_BINARY 
+  ;
+
+LIBMIX := LIB: :: EDIT 0
+     NMIX 2
+     CTRA WIMS
+*     SUBG
+     ANIS 2
+     DEPL LIB: DRAGON FIL: DLIB_J3XMAS
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS
+
+* Rod+He
+  MIX 1 1000.0
+  VAR.C.FUEL 
+  
+* mix for depl. bug 
+  MIX 2 1000.0
+  He4 =  'He4'    1.0E-05 
+
+;
+
+GCELL := GEO: ::  HOMOGE
+     MIX 1
+ ;
+ 
+TRACK := SYBILT: GCELL ::
+  TITLE 'Fuel'
+  EDIT 1 MAXR 30 ;
+
+*LIBMIXS := USS: LIBMIX TRACK :: EDIT 1  ;
+LIBMIXS := SHI: LIBMIX TRACK :: EDIT 1 NOLJ ;
+
+
+SYS := ASM: LIBMIXS TRACK ;
+
+FLUX := FLU: SYS LIBMIXS TRACK  ::
+     TYPE B B1 PNL
+     EXTE 100 1E-4 THER 5 1E-4 ;
+
+EDC := EDI: LIBMIXS TRACK FLUX ::
+  EDIT 0
+  MERG COMP 
+  COND  7.4080E06     
+          3.3550E03  
+          6.1440E01  
+          2.3800E00  
+          1.2000E-01 
+          1.0000E-02
+  MICR ALL
+  SAVE ON 'FCCg' ;
+
+DATABASE := COMPO: :: 
+     STEP UP 'BOL InFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+     STEP UP 'BOL ExFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+;
+DBC   := DATABASE ;
+
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'BOL InFuel'
+     TempFuel 1000.0
+     TempSleeve 1000.0
+     ;
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'BOL ExFuel'
+     TempFuel 1000.0
+     TempSleeve 1000.0
+     ;
+
+VAR.G.filename   := DBC ;
+
+END: ;

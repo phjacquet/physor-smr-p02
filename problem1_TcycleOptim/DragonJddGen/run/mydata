@@ -1,0 +1,459 @@
+LINKED_LIST
+  LIBIFUEL   
+  LIBMIX
+  GCELL    
+  TRACK SYS FLUX
+  EDNOC EDC
+  DATABASE
+  FCIDB 
+  FCODB 
+  HEDB
+  REDB
+  CTDB
+  MIXDB
+  BURNUP
+  ;
+
+SEQ_ASCII
+  FCIDB.db 
+  FCODB.db 
+  HEDB.db
+  REDB.db
+  CTDB.db
+  FLUX.db
+  ;
+
+MODULE
+  GEO: LIB: 
+  SHI: USS: 
+  SYBILT: SNT: ASM: FLU: EDI:
+  DELETE: END:
+  PSP: UTL: COMPO: EVO: NCR:
+  ;
+
+SEQ_BINARY 
+  ;
+
+FCIDB := FCIDB.db ;
+FCODB := FCODB.db ;
+HEDB := HEDB.db ;
+REDB := REDB.db ;
+CTDB := CTDB.db ;
+
+MIXDB := COMPO: :: 
+     STEP UP 'BOL InFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+     STEP UP 'BOL ExFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+     STEP UP 'BOL Refl' 
+     COMM  'generic' ENDC
+     PARA 'Temp' VALU REAL
+     INIT 
+     STEP UP 'Helium' 
+     COMM  'generic' ENDC
+     PARA 'Temp' VALU REAL
+     INIT 
+     STEP UP 'ControlTube' 
+     COMM  'generic' ENDC
+     PARA 'Temp' VALU REAL
+     INIT 
+     ;
+     
+MIXDB := COMPO: MIXDB FCIDB :: EDIT 3 
+STEP UP 'BOL InFuel' ;
+
+MIXDB := COMPO: MIXDB FCODB :: EDIT 3 
+STEP UP 'BOL ExFuel' ;
+
+MIXDB := COMPO: MIXDB HEDB :: EDIT 3 
+STEP UP 'Helium' ;
+
+MIXDB := COMPO: MIXDB CTDB :: EDIT 3 
+STEP UP 'ControlTube' ;
+
+MIXDB := COMPO: MIXDB REDB :: EDIT 3 
+STEP UP 'BOL Refl' ;
+
+LIBMIX := NCR: MIXDB ::
+ EDIT 1
+ MICRO
+ NMIX 11
+  COMPO MIXDB 'BOL InFuel' MIX 1 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX   
+  COMPO MIXDB 'BOL InFuel' MIX 2 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX  
+  COMPO MIXDB 'BOL InFuel' MIX 3 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX  
+  COMPO MIXDB 'BOL InFuel' MIX 4 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX  
+  COMPO MIXDB 'BOL ExFuel' MIX 5 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX   
+  COMPO MIXDB 'BOL ExFuel' MIX 6 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX   
+  COMPO MIXDB 'BOL ExFuel' MIX 7 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX   
+  COMPO MIXDB 'BOL ExFuel' MIX 8 FROM 1 
+      SET LINEAR TempFuel 1000.
+      SET LINEAR TempSleeve 1000.
+      MICRO ALL
+      ENDMIX   
+  COMPO MIXDB 'ControlTube' MIX 9 FROM 1
+      SET LINEAR Temp 1000.       
+      MICRO ALL
+      ENDMIX
+  COMPO MIXDB 'Helium' MIX 10 FROM 1
+      SET LINEAR Temp 1000.       
+      MICRO ALL
+      ENDMIX
+  COMPO MIXDB 'BOL Refl' MIX 11 FROM 1
+      SET LINEAR Temp 1000.       
+      MICRO ALL
+      ENDMIX
+
+;
+
+LIBMIX := LIB: LIBMIX :: EDIT 0
+     DEPL LIB: DRAGON FIL: DLIB_J3
+;
+
+*******************************************
+*** Inclusion de la geometrie par fichier
+GCELL := GEO: ::  TUBEZ 4 5
+  R+ VOID  Z- VOID Z+ REFL 
+  RADIUS   0.0 60. 70. 100. 120.
+  MESHZ   -20.
+          0.0        
+          68.250000  
+          136.500000  
+          204.750000
+          273.000000 
+  MIX 
+   11  10    11  11
+   1   10     5  11    
+   2   10     6  11    
+   3   10     7  11    
+   4   10     8  11    
+  SPLITR 5 2 5 2
+  SPLITZ 2 2 2 2 2
+ ;
+*******************************************
+
+TRACK := SNT: GCELL ::
+     EDIT 2
+     MAXR 1000
+     DIAM 1 SN 4
+     SCAT 2
+     QUAB 7
+     TITLE 'CORE'
+     ;
+
+SYS := ASM: LIBMIX TRACK :: EDIT 99 ARM ;
+
+FLUX := FLUX.db ;
+
+FLUX := FLU: FLUX SYS LIBMIX  TRACK  ::
+     EDIT 1
+     TYPE K
+     EXTE 10 1E-4 THER 30 1E-4
+     ;
+     
+EDNOC := EDI: LIBMIX TRACK FLUX :: 
+     MERG COMP
+     EDIT 3
+     SAVE ON 'CORE' ;
+
+
+BURNUP LIBMIX  := EVO: LIBMIX FLUX TRACK ::
+DEPL 0. 0.001 DAY POWR 6.35 EDIT 3 ;
+
+BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
+DEPL 0.001 365. DAY POWR 6.35 EDIT 3 ;
+
+*********************************************************
+
+EDNOC GCELL TRACK SYS := DELETE: EDNOC GCELL TRACK SYS ;
+
+
+*******************************************
+*** Inclusion de la geometrie par fichier
+GCELL := GEO: ::  TUBEZ 4 5
+  R+ VOID  Z- VOID Z+ REFL 
+  RADIUS   0.0 60. 70. 100. 120.
+  MESHZ   -20.
+          0.0        
+          68.250000  
+          136.500000  
+          204.750000
+          273.000000 
+  MIX 
+   11  10    11  11
+   1   10     5  11    
+   2   10     6  11    
+   3   10     7  11    
+   4   10     8  11    
+  SPLITR 5 2 5 2
+  SPLITZ 2 2 2 2 2
+ ;
+*******************************************
+
+ 
+TRACK := SNT: GCELL ::
+     EDIT 2
+     MAXR 1000
+     DIAM 1 SN 4
+     SCAT 2
+     QUAB 7
+     TITLE 'CORE'
+     ;
+
+SYS := ASM: LIBMIX TRACK :: EDIT 99 ARM ;
+
+FLUX := FLU: FLUX SYS LIBMIX  TRACK  ::
+     EDIT 1
+     TYPE K
+     EXTE 10 1E-4 THER 30 1E-4
+     ;
+     
+EDNOC := EDI: LIBMIX TRACK FLUX :: 
+     MERG COMP
+     EDIT 3
+     SAVE ON 'CORE' ;
+
+BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
+DEPL 365. 730. DAY POWR 6.35 EDIT 3 ;
+
+     
+*********************************************************
+
+EDNOC GCELL TRACK SYS := DELETE: EDNOC GCELL TRACK SYS ;
+
+*******************************************
+*** Inclusion de la geometrie par fichier
+GCELL := GEO: ::  TUBEZ 4 5
+  R+ VOID  Z- VOID Z+ REFL 
+  RADIUS   0.0 60. 70. 100. 120.
+  MESHZ   -20.
+          0.0        
+          68.250000  
+          136.500000  
+          204.750000
+          273.000000 
+  MIX 
+   11  10    11  11
+   1   10     5  11    
+   2   10     6  11    
+   3   10     7  11    
+   4   10     8  11    
+  SPLITR 5 2 5 2
+  SPLITZ 2 2 2 2 2
+ ;
+*******************************************
+
+ 
+TRACK := SNT: GCELL ::
+     EDIT 2
+     MAXR 1000
+     DIAM 1 SN 4
+     SCAT 2
+     QUAB 7
+     TITLE 'CORE'
+     ;
+
+SYS := ASM: LIBMIX TRACK :: EDIT 99 ARM ;
+
+FLUX := FLU: FLUX SYS LIBMIX  TRACK  ::
+     EDIT 1
+     TYPE K
+     EXTE 10 1E-4 THER 30 1E-4
+     ;
+     
+EDNOC := EDI: LIBMIX TRACK FLUX :: 
+     MERG COMP
+     EDIT 3
+     SAVE ON 'CORE' ;
+
+BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
+DEPL 730. 1825. DAY POWR 6.35 EDIT 3 ;
+     
+*********************************************************
+
+EDNOC GCELL TRACK SYS := DELETE: EDNOC GCELL TRACK SYS ;
+
+*******************************************
+*** Inclusion de la geometrie par fichier
+GCELL := GEO: ::  TUBEZ 4 5
+  R+ VOID  Z- VOID Z+ REFL 
+  RADIUS   0.0 60. 70. 100. 120.
+  MESHZ   -20.
+          0.0        
+          68.250000  
+          136.500000  
+          204.750000
+          273.000000 
+  MIX 
+   11  10    11  11
+   1   10     5  11    
+   2   10     6  11    
+   3   10     7  11    
+   4   10     8  11    
+  SPLITR 5 2 5 2
+  SPLITZ 2 2 2 2 2
+ ;
+*******************************************
+
+ 
+TRACK := SNT: GCELL ::
+     EDIT 2
+     MAXR 1000
+     DIAM 1 SN 4
+     SCAT 2
+     QUAB 7
+     TITLE 'CORE'
+     ;
+
+SYS := ASM: LIBMIX TRACK :: EDIT 99 ARM ;
+
+FLUX := FLU: FLUX SYS LIBMIX  TRACK  ::
+     EDIT 1
+     TYPE K
+     EXTE 10 1E-4 THER 30 1E-4
+     ;
+     
+EDNOC := EDI: LIBMIX TRACK FLUX :: 
+     MERG COMP
+     EDIT 3
+     SAVE ON 'CORE' ;
+
+BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
+DEPL 1825. 5475. DAY POWR 6.35 EDIT 3 ;
+     
+*********************************************************
+
+EDNOC GCELL TRACK SYS := DELETE: EDNOC GCELL TRACK SYS ;
+
+*******************************************
+*** Inclusion de la geometrie par fichier
+GCELL := GEO: ::  TUBEZ 4 5
+  R+ VOID  Z- VOID Z+ REFL 
+  RADIUS   0.0 60. 70. 100. 120.
+  MESHZ   -20.
+          0.0        
+          68.250000  
+          136.500000  
+          204.750000
+          273.000000 
+  MIX 
+   11  10    11  11
+   1   10     5  11    
+   2   10     6  11    
+   3   10     7  11    
+   4   10     8  11    
+  SPLITR 5 2 5 2
+  SPLITZ 2 2 2 2 2
+ ;
+*******************************************
+
+ 
+TRACK := SNT: GCELL ::
+     EDIT 2
+     MAXR 1000
+     DIAM 1 SN 4
+     SCAT 2
+     QUAB 7
+     TITLE 'CORE'
+     ;
+
+SYS := ASM: LIBMIX TRACK :: EDIT 99 ARM ;
+
+FLUX := FLU: FLUX SYS LIBMIX  TRACK  ::
+     EDIT 1
+     TYPE K
+     EXTE 10 1E-4 THER 30 1E-4
+     ;
+     
+EDNOC := EDI: LIBMIX TRACK FLUX :: 
+     MERG COMP
+     EDIT 3
+     SAVE ON 'CORE' ;
+
+BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
+DEPL 5475. 10950. DAY POWR 6.35 EDIT 3 ;
+     
+*********************************************************
+
+EDNOC GCELL TRACK SYS := DELETE: EDNOC GCELL TRACK SYS ;
+
+*******************************************
+*** Inclusion de la geometrie par fichier
+GCELL := GEO: ::  TUBEZ 4 5
+  R+ VOID  Z- VOID Z+ REFL 
+  RADIUS   0.0 60. 70. 100. 120.
+  MESHZ   -20.
+          0.0        
+          68.250000  
+          136.500000  
+          204.750000
+          273.000000 
+  MIX 
+   11  10    11  11
+   1   10     5  11    
+   2   10     6  11    
+   3   10     7  11    
+   4   10     8  11    
+  SPLITR 5 2 5 2
+  SPLITZ 2 2 2 2 2
+ ;
+*******************************************
+
+ 
+TRACK := SNT: GCELL ::
+     EDIT 2
+     MAXR 1000
+     DIAM 1 SN 4
+     SCAT 2
+     QUAB 7
+     TITLE 'CORE'
+     ;
+
+SYS := ASM: LIBMIX TRACK :: EDIT 99 ARM ;
+
+FLUX := FLU: FLUX SYS LIBMIX  TRACK  ::
+     EDIT 1
+     TYPE K
+     EXTE 10 1E-4 THER 30 1E-4
+     ;
+     
+EDNOC := EDI: LIBMIX TRACK FLUX :: 
+     MERG COMP
+     EDIT 3
+     SAVE ON 'CORE' ;
+
+
+END: ;

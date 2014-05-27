@@ -1,0 +1,120 @@
+LINKED_LIST
+  LIBMIX   LIBMIXS
+  GCELL    
+  TRACK SYS FLUX
+  EDC
+  DATABASE DBC
+  ;
+
+SEQ_ASCII
+  FC13.Magnox.3000.DB.db ;
+
+SEQ_BINARY 
+     TRACK_FIL ;
+
+MODULE
+  GEO: LIB: 
+  SHI: USS: 
+  SYBILT: EXCELT: ASM: FLU: EDI:
+  DELETE: END:
+  PSP: UTL: COMPO: EVO:
+  ;
+
+SEQ_BINARY 
+  ;
+
+LIBMIX := LIB: :: EDIT 0
+     NMIX 2
+     CTRA WIMS
+*     SUBG
+     ANIS 2
+     DEPL LIB: DRAGON FIL: DLIB_J3XMAS
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS
+
+* Rod+He
+  MIX 1 1000.0
+O16 =  'O16'    1.49740E-02
+O17 =  'O17'    5.68840E-06
+
+U238 = 'U238'    6.513676E-03  1
+Pu238 = 'Pu238'  9.733079E-07  1
+Pu239 = 'Pu239'  7.786463E-04  1
+Pu240 = 'Pu240'  1.644890E-04  1
+Pu241 = 'Pu241'  2.627931E-05  1
+Pu242 = 'Pu242'  2.919924E-06  1
+Am241 = 'Am241'  0.000000E+00  1
+
+C0 =  'C0'    4.24780E-02
+Si28 =  'Si28'    1.92630E-03
+Si29 =  'Si29'    9.76180E-05
+Si30 =  'Si30'    6.44540E-05
+He4 =  'He4'    2.39580E-05
+Fe56 =  'Fe56'    5.63560E-03
+Cr52 =  'Cr52'    9.17450E-04
+Y89 =  'Y89'    1.87510E-05
+Mo95 =  'Mo95'    2.00910E-05
+Ti48 =  'Ti48'    6.56300E-05
+  
+* mix for depl. bug 
+  MIX 2 1000.0
+  He4 =  'He4'    1.0E-05 
+
+;
+
+GCELL := GEO: ::  HOMOGE
+     MIX 1
+ ;
+ 
+TRACK := SYBILT: GCELL ::
+  TITLE 'Fuel'
+  EDIT 1 MAXR 30 ;
+
+*LIBMIXS := USS: LIBMIX TRACK :: EDIT 1  ;
+LIBMIXS := SHI: LIBMIX TRACK :: EDIT 1 NOLJ ;
+
+
+SYS := ASM: LIBMIXS TRACK ;
+
+FLUX := FLU: SYS LIBMIXS TRACK  ::
+     TYPE B B1 PNL
+     EXTE 100 1E-4 THER 5 1E-4 ;
+
+EDC := EDI: LIBMIXS TRACK FLUX ::
+  EDIT 0
+  MERG COMP COND 7.4080E06 3.6790E06 6.7210E05 1.1110E05 1.9310E04 
+          3.3550E03 1.5850E03 7.4850E02 2.7540E02 1.3010E02 
+          6.1440E01 2.9000E01 1.3700E01 8.3200E00 5.0400E00 
+          2.3800E00 1.2900E00 6.5000E-01 3.5000E-01 2.0000E-01 
+          1.2000E-01 8.0000E-02 5.0000E-02 2.0000E-02 
+          1.0000E-02
+  MICR ALL
+  SAVE ON 'FCCg' ;
+
+DATABASE := COMPO: :: 
+     STEP UP 'BOL InFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+     STEP UP 'BOL ExFuel' 
+     COMM  'generic' ENDC
+     PARA 'TempFuel' VALU REAL
+     PARA 'TempSleeve' VALU REAL
+     INIT 
+;
+DBC   := DATABASE ;
+
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'BOL InFuel'
+     TempFuel 1000.0
+     TempSleeve 1000.0
+     ;
+DBC := COMPO: DBC EDC :: EDIT 5 
+     STEP UP 'BOL ExFuel'
+     TempFuel 1000.0
+     TempSleeve 1000.0
+     ;
+
+FC13.Magnox.3000.DB.db   := DBC ;
+
+END: ;
