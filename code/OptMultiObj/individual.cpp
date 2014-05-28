@@ -41,9 +41,12 @@ bool Individual::isDominatedBy(Individual& m) {
     if (getEvaluationStatus()==false) return true ;
     if (m.getEvaluationStatus()==false) return false ;
     bool mDominate=true ;
-    for (unsigned oId=0;oId<objectives.size()  && mDominate;oId++) {
-        if (objectives[oId]<=m.objectives[oId]) mDominate=false;
+    unsigned nEquals=0 ;
+    for (unsigned oId=0;oId<objectives.size() && mDominate ;oId++) {
+        if (objectives[oId]<m.objectives[oId]) mDominate=false;
+        if (objectives[oId]==m.objectives[oId]) nEquals++;
     }
+    if (mDominate && nEquals==objectives.size()) mDominate=false ;
 
     return (mDominate) ;
 }

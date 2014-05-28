@@ -40,13 +40,13 @@ void Problem_ShScriptEval::evaluateIndividual(Individual & r) {
     QProcess process;
     process.start(scriptFilename+" "+scriptArg);
     process.waitForFinished(-1);
-    QString stdout = process.readAllStandardOutput();
-    QString stderr = process.readAllStandardError();
+    QString qstdout = process.readAllStandardOutput();
+    QString qstderr = process.readAllStandardError();
 
-    QStringList s=stdout.split(QRegExp(";"));
+    QStringList s=qstdout.split(QRegExp(";"));
 
-    if (stderr!="" || s.size() != r.objectives.size()) {
-        qDebug()<<r.toString()<<"\n"<<"stderr="<<stderr ;
+    if (qstderr!="" || s.size() != r.objectives.size()) {
+        qDebug()<<r.toString()<<"\n"<<"stderr="<<qstderr ;
         for (unsigned i=0;i<r.objectives.size() && i<s.size(); i++) {
             r.objectives[i]=0. ;
             }
@@ -57,7 +57,7 @@ void Problem_ShScriptEval::evaluateIndividual(Individual & r) {
             bool ok=true;
             r.objectives[i]=s.at(i).toDouble(&ok) ;
             if (ok==false) {
-                qDebug()<<r.toString()<<"\n"<<"Bad value : r.objectives["<<i<<"]="<<s.at(i)<<stderr ;
+                qDebug()<<r.toString()<<"\n"<<"Bad value : r.objectives["<<i<<"]="<<s.at(i)<<qstderr ;
                 evaluationOk=false ;
             }
     //        qDebug()<<r.objectives[i] ;
