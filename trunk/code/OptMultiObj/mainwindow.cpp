@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSpinBox>
+#include <QFileDialog>
 #include "optimisationengine.h"
 
 MainWindow::MainWindow()
@@ -23,11 +24,14 @@ MainWindow::MainWindow()
     d_panel->setTabPosition( QTabWidget::West );
     d_panel->addTab( createComputeTab( this ), "Compute" );
     d_panel->addTab( createPlotTab( this ), "Plot" );
+    d_panel->addTab( createFileTab( this ), "File" );
 
     setCentralWidget( w );
 
     connect(d_iterButton,SIGNAL(released()),this, SLOT(iterButtonReleased())) ;
     connect(d_computeButton,SIGNAL(released()),this, SLOT(computeButtonReleased())) ;
+    connect(d_openButton,SIGNAL(released()),this, SLOT(openButtonReleased())) ;
+    connect(d_saveButton,SIGNAL(released()),this, SLOT(saveButtonReleased())) ;
     connect(d_iterNumberSpinBox,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(iterate(int))) ;
     connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
@@ -38,6 +42,20 @@ MainWindow::MainWindow()
 void MainWindow::iterButtonReleased(  ) {
     d_iterNumberSpinBox->setMaximum(d_iterNumberSpinBox->value()+1);
     d_iterNumberSpinBox->setValue(d_iterNumberSpinBox->value()+1);
+}
+
+void MainWindow::openButtonReleased(  ) {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                     "",
+                                                     tr("Files (*.*)"));
+    qDebug()<<fileName;
+}
+
+void MainWindow::saveButtonReleased(  ) {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                     "",
+                                                     tr("Files (*.*)"));
+    qDebug()<<fileName;
 }
 
 void MainWindow::computeButtonReleased(  ) {
@@ -94,6 +112,22 @@ QWidget *MainWindow::createPlotTab( QWidget *parent )
     layout->setRowStretch( 1, 10 );
     return page;
 }
+
+QWidget *MainWindow::createFileTab( QWidget *parent )
+{
+    QWidget *page = new QWidget( parent );
+    QGridLayout *layout = new QGridLayout( page );
+    d_openButton= new QPushButton("Open", page );
+    d_saveButton= new QPushButton("Save", page );
+    layout->addWidget( new QLabel( "Open existing results", page ), 0, 0 );
+    layout->addWidget(d_openButton , 1, 0 );
+    layout->addWidget(d_saveButton , 1, 1 );
+    layout->addLayout( new QHBoxLayout(), 2, 0 );
+    layout->setColumnStretch( 2, 10 );
+    layout->setRowStretch( 2, 10 );
+    return page;
+}
+
 
 void MainWindow::createPlots() {
     qDebug()<<"void MainWindow::createPlots()";

@@ -24,11 +24,14 @@ public:
 private:
     QWidget *createComputeTab( QWidget *parent );
     QWidget *createPlotTab( QWidget *parent );
+    QWidget *createFileTab( QWidget *parent ) ;
     void createPlots() ;
 
 public Q_SLOTS:
     void getSetOfIndividual( std::map<std::string,std::vector<Individual> > );
     void iterButtonReleased(  );
+    void openButtonReleased(  );
+    void saveButtonReleased(  );
     void computeButtonReleased(  ) ;
     void individualSelection(Plot *, QString , QString , QRectF) ;
 
@@ -44,6 +47,9 @@ private:
     QSpinBox    * d_computeNumberSpinBox ;
     QSpinBox    * d_NumberOfIndividuals ;
     QTabWidget * d_panel ;
+    QPushButton * d_openButton ;
+    QPushButton * d_saveButton ;
+
     OptimisationEngine * d_optimisationEngine ;
 };
 

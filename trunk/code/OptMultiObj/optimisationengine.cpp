@@ -10,8 +10,8 @@ OptimisationEngine::OptimisationEngine()
 {
     sizeOfPopulationIni=100 ;
     sizeOfPopulationTarget=100;
-    problem = new Problem_ShScriptEval("/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/data") ;
-    //problem = new Problem_B() ;
+    //problem = new Problem_ShScriptEval("/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/data") ;
+    problem = new Problem_A() ;
 }
 
 OptimisationEngine::~OptimisationEngine()
