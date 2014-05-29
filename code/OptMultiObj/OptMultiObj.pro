@@ -1,5 +1,6 @@
 QT += widgets
 QT += core gui
+QT += printsupport
 LIBS += -L/home/physor/qwt-6.1.0/lib -lqwt
 LIBS += -LC:\build-qwt-Desktop_Qt_5_2_1_MinGW_32bit-Debug/lib/ -lqwt
 INCLUDEPATH += C:\qwt-6.1\src

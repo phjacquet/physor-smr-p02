@@ -77,6 +77,8 @@ void Problem_B::evaluateIndividual(Individual & r) {
     r.objectives[2]=pow(RM2-R2,2.) ;
     r.objectives[3]=pow(RM3-R3,2.) ;
 
+    r.setEvaluationStatus(true);
+
     numberOfEvaluations++ ;
 }
 

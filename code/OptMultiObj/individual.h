@@ -29,6 +29,12 @@ private:
     int objDim ;
     bool hasBeenEvaluated ;
 
+    friend QDataStream & operator << (QDataStream & out, const Individual & l);
+    friend QDataStream & operator >> (QDataStream & in, Individual & l);
+
 };
+
+QDataStream & operator << (QDataStream & out, const Individual & l);
+QDataStream & operator >> (QDataStream & in, Individual & l);
 
 #endif // INDIVIDUAL_H

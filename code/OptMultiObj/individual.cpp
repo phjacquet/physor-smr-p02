@@ -47,7 +47,7 @@ bool Individual::isDominatedBy(Individual& m) {
         if (objectives[oId]==m.objectives[oId]) nEquals++;
     }
     if (mDominate && nEquals==objectives.size()) mDominate=false ;
-
+    //qDebug()<<this->toString()<<" is dominated by "<<m.toString()<<" ? ="<<mDominate;
     return (mDominate) ;
 }
 
@@ -97,3 +97,27 @@ QString Individual::toString() {
 
     return r ;
 }
+
+
+QDataStream & operator << (QDataStream & out, const Individual & l) {
+    out <<l.nearestIndividualDistance<<l.NonDominationOrder<<l.paramDim<<l.objDim<<l.hasBeenEvaluated;
+    for (unsigned i=0;i<l.paramDim;i++)
+        out<<l.parameters[i];
+    for (unsigned i=0;i<l.objDim;i++)
+        out<<l.objectives[i];
+    return out ;
+}
+
+QDataStream & operator >> (QDataStream & in, Individual & l)  {
+    in >>l.nearestIndividualDistance>>l.NonDominationOrder>>l.paramDim>>l.objDim>>l.hasBeenEvaluated;
+    l.parameters.resize(l.paramDim);
+    l.objectives.resize(l.objDim);
+
+    for (unsigned i=0;i<l.paramDim;i++)
+        in >>l.parameters[i];
+    for (unsigned i=0;i<l.objDim;i++)
+        in >>l.objectives[i];
+    //qDebug()<<l.toString();
+    return in ;
+}
+

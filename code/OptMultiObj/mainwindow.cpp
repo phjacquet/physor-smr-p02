@@ -7,8 +7,15 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSpinBox>
+#include <QCheckBox>
 #include <QFileDialog>
+#include <QVariant>
+#include <QPrinter>
+#include <QDateTime>
+#include <qwt_plot_renderer.h>
+
 #include "optimisationengine.h"
+
 
 MainWindow::MainWindow()
 {
@@ -35,8 +42,49 @@ MainWindow::MainWindow()
     connect(d_iterNumberSpinBox,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(iterate(int))) ;
     connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
+    connect(d_pdfExportButton,SIGNAL(released()),this, SLOT(exportToPDF()) ) ;
+    for (unsigned i = 0; i < paramPlots.size(); i++)
+        connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
+    for (unsigned i = 0; i < objPlots.size(); i++)
+        connect(objPlots[objPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
 
     d_optimisationEngine->iterate(0);
+}
+
+void MainWindow::exportToPDF() {
+    QPrinter printer;
+    QwtPlotRenderer renderer;
+
+    QString fileName="results.pdf";
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOrientation(QPrinter::Landscape);
+    printer.setOutputFileName(fileName);
+    QPainter painter;
+    if (! painter.begin(&printer)) {
+        qDebug()<<"failed to open "<<fileName<<" is it writable?";
+        return ;
+    }
+    for (unsigned i = 0; i < paramPlots.size(); i++) {
+        QString key=paramPlots.keys().at(i);
+        paramPlots[key]->exportToPDF();
+        renderer.render(paramPlots[key],&painter,QRectF(300,0,700,700));
+        painter.drawText(10, 10, QDateTime::currentDateTime().toString());
+        if (! printer.newPage()) {
+            qWarning("failed in flushing page to disk, disk full?");
+            return ;
+        }
+    }
+    for (unsigned i = 0; i < objPlots.size(); i++) {
+        QString key=objPlots.keys().at(i);
+        objPlots[key]->exportToPDF();
+        renderer.render(objPlots[key],&painter,QRectF(300,0,700,700));
+        painter.drawText(10, 10, QDateTime::currentDateTime().toString());
+        if (! printer.newPage()) {
+            qWarning("failed in flushing page to disk, disk full?");
+            return ;
+        }
+    }
+    painter.end();
 }
 
 void MainWindow::iterButtonReleased(  ) {
@@ -45,17 +93,46 @@ void MainWindow::iterButtonReleased(  ) {
 }
 
 void MainWindow::openButtonReleased(  ) {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                     "",
-                                                     tr("Files (*.*)"));
+    qRegisterMetaTypeStreamOperators<OptimisationEngine>("OptimisationEngine");
+    qMetaTypeId<OptimisationEngine>();
+
+    QString fileName = QFileDialog::getOpenFileName(this,"Open File","","Files (*.*)");
     qDebug()<<fileName;
+
+    QVariant qvar ;
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+    in >> qvar;
+
+    qDebug()<<"d_optimisationEngine->deleteLater():"<<d_optimisationEngine;
+    disconnect(d_iterNumberSpinBox,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(iterate(int))) ;
+    disconnect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
+    disconnect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
+    d_optimisationEngine->deleteLater();
+
+    d_optimisationEngine = new OptimisationEngine(qvar.value<OptimisationEngine>());
+    qDebug()<<"d_optimisationEngine = new : "<<d_optimisationEngine;
+    connect(d_iterNumberSpinBox,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(iterate(int))) ;
+    connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
+    connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
+
+    d_iterNumberSpinBox->setMaximum(d_optimisationEngine->getLastIterationNumber());
+    d_iterNumberSpinBox->setValue(d_optimisationEngine->getLastIterationNumber());
+
 }
 
 void MainWindow::saveButtonReleased(  ) {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                     "",
-                                                     tr("Files (*.*)"));
+    qRegisterMetaTypeStreamOperators<OptimisationEngine>("OptimisationEngine");
+    qMetaTypeId<OptimisationEngine>();
+
+    QString fileName =  QFileDialog::getSaveFileName(this, "Save File", "", "Files (*.dat)");
     qDebug()<<fileName;
+    QVariant qvar = QVariant::fromValue(* d_optimisationEngine);
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    QDataStream out(&file);
+    out << qvar;
 }
 
 void MainWindow::computeButtonReleased(  ) {
@@ -66,9 +143,6 @@ void MainWindow::computeButtonReleased(  ) {
         repaint();
     }
 }
-
-
-
 
 QWidget *MainWindow::createComputeTab( QWidget *parent )
 {
@@ -106,10 +180,14 @@ QWidget *MainWindow::createPlotTab( QWidget *parent )
 {
     QWidget *page = new QWidget( parent );
     QGridLayout *layout = new QGridLayout( page );
+    d_pdfExportButton=new QPushButton("export",page);
+    d_pdfExportButton->setChecked(false);
     layout->addWidget( new QLabel( "Use to plot", page ), 0, 0 );
-    layout->addLayout( new QHBoxLayout(), 1, 0 );
-    layout->setColumnStretch( 1, 10 );
-    layout->setRowStretch( 1, 10 );
+    layout->addWidget( new QLabel( "Export to pdf", page ), 1, 0 );
+    layout->addWidget( d_pdfExportButton, 1, 1 );
+    layout->addLayout( new QHBoxLayout(), 2, 0 );
+    layout->setColumnStretch( 2, 10 );
+    layout->setRowStretch( 2, 10 );
     return page;
 }
 
@@ -140,13 +218,12 @@ void MainWindow::createPlots() {
     QGridLayout *olayout = new QGridLayout();
     hLayout->addLayout(playout);
     hLayout->addLayout(olayout);
-    qDebug()<<"ok";
 
     for (unsigned l = 0; l < d_optimisationEngine->getNumberOfParameters()-1; l++) {
         for (unsigned c = l+1; c < d_optimisationEngine->getNumberOfParameters(); c++) {
             QString ord="X"+QString::number(l);
             QString abs="X"+QString::number(c);
-            QString key=ord+":"+abs;
+            QString key=ord+"_"+abs;
 
             Plot * d_plot = new Plot( key, plottingWidget );
             d_plot->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -157,7 +234,6 @@ void MainWindow::createPlots() {
             d_plot->setAxisTitle(QwtPlot::yLeft,ord);
             paramPlots[key]=d_plot;
             playout->addWidget( d_plot, l, c-1 );
-            connect(d_plot,SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
         }
     }
 
@@ -165,7 +241,7 @@ void MainWindow::createPlots() {
         for (unsigned c = l+1; c < d_optimisationEngine->getNumberOfObjectives(); c++) {
             QString ord="F"+QString::number(l);
             QString abs="F"+QString::number(c);
-            QString key=ord+":"+abs;
+            QString key=ord+"_"+abs;
 
             Plot * d_plot = new Plot( key, plottingWidget );
             d_plot->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -178,10 +254,9 @@ void MainWindow::createPlots() {
             d_plot->setAxisAutoScale(QwtPlot::yLeft) ;
             objPlots[key]=d_plot;
             olayout->addWidget( d_plot, l, c-1);
-
-            connect(d_plot,SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
         }
     }
+    qDebug()<<"ok";
 }
 
 void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual> > setOfIndiduals_l ) {
@@ -192,7 +267,7 @@ void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual
         for (unsigned c = l+1; c < d_optimisationEngine->getNumberOfParameters(); c++) {
             QString ord="X"+QString::number(l);
             QString abs="X"+QString::number(c);
-            QString key=ord+":"+abs;
+            QString key=ord+"_"+abs;
 //            qDebug()<<key;
 
             QMap<QString, QPolygonF > pcurves ;
@@ -215,7 +290,7 @@ void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual
         for (unsigned c = l+1; c < d_optimisationEngine->getNumberOfObjectives(); c++) {
             QString ord="F"+QString::number(l);
             QString abs="F"+QString::number(c);
-            QString key=ord+":"+abs;
+            QString key=ord+"_"+abs;
             QMap<QString, QPolygonF > ocurves;
             for (std::map<std::string,std::vector<Individual> >::iterator it=setOfIndiduals_l.begin(); it!=setOfIndiduals_l.end(); ++it) {
                 QPolygonF samples;
@@ -230,6 +305,7 @@ void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual
             objPlots[key]->setCurves(ocurves );
         }
     }
+    repaint();
 }
 
 void MainWindow::individualSelection(Plot * plot, QString ordName, QString absName, QRectF rect) {

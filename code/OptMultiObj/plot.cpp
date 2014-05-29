@@ -7,13 +7,14 @@
 #include <qwt_symbol.h>
 #include <qwt_legend.h>
 #include <qwt_plot_grid.h>
+#include <qwt_plot_renderer.h>
 
 Plot::Plot( QString l_name, QWidget *parent ):
     QwtPlot( parent )
 {
     name=l_name;
-    absName=name.split(":").at(1);
-    ordName=name.split(":").at(0);
+    absName=name.split("_").at(1);
+    ordName=name.split("_").at(0);
 
     setCanvasBackground( Qt::black );
     setAxisScale( QwtPlot::yLeft, 0.0, 10.0 );
@@ -27,8 +28,10 @@ Plot::Plot( QString l_name, QWidget *parent ):
     //setAxisAutoScale(QwtPlot::xBottom) ;
     //setAxisAutoScale(QwtPlot::yLeft) ;
 
-    QwtPlotPanner *panner = new QwtPlotPanner( canvas() );
-    panner->setMouseButton (Qt::LeftButton, Qt::ControlModifier) ;
+    QwtPlotPanner *panner1 = new QwtPlotPanner( canvas() );
+    panner1->setMouseButton (Qt::MiddleButton) ;
+    QwtPlotPanner *panner2 = new QwtPlotPanner( canvas() );
+    panner2->setMouseButton (Qt::LeftButton,Qt::ControlModifier) ;
     QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
     magnifier->setMouseButton( Qt::NoButton );
     QwtPlotPicker *  picker=new QwtPlotPicker ( canvas() );
@@ -54,6 +57,12 @@ Plot::Plot( QString l_name, QWidget *parent ):
     legendsName[sortingCurves[1]]="nDom";
     legendsName[sortingCurves[2]]="nDomDec";
     legendsName[sortingCurves[3]]="sel";
+}
+void Plot::exportToPDF() {
+    QwtPlotRenderer renderer;
+    renderer.renderDocument(this, name+".png", QSizeF(200, 200), 100);
+    renderer.renderDocument(this, name+".pdf", QSizeF(200, 200), 100);
+    qDebug()<<"export plot (name:"<<name<<") to files : "<<name+".pdf/.png";
 }
 
 void Plot::setCurves( QMap<QString, QPolygonF > & curves )

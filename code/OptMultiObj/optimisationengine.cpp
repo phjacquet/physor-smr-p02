@@ -1,22 +1,41 @@
 #include "optimisationengine.h"
 #include <QDebug>
 #include <QtMath>
+#include <QTimer>
+#include <QCoreApplication>
 
 #include "problem_a.h"
 #include "problem_b.h"
 #include "problem_script.h"
 
-OptimisationEngine::OptimisationEngine()
-{
+void OptimisationEngine::instantiateProblem() {
     sizeOfPopulationIni=100 ;
     sizeOfPopulationTarget=100;
     //problem = new Problem_ShScriptEval("/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/data") ;
     problem = new Problem_A() ;
 }
 
+OptimisationEngine::OptimisationEngine() {
+    instantiateProblem();
+}
+
+OptimisationEngine::OptimisationEngine(const OptimisationEngine & l) {
+    qDebug()<<"OptimisationEngine::OptimisationEngine(const OptimisationEngine & l)";
+    instantiateProblem();
+    historySetOfIndidual = l.historySetOfIndidual;
+    sizeOfPopulationIni = l.sizeOfPopulationIni;
+    sizeOfPopulationTarget = l.sizeOfPopulationTarget;
+    qDebug()<<"historySetOfIndidual.size():"<<historySetOfIndidual.size();
+}
+
+
 OptimisationEngine::~OptimisationEngine()
 {
     delete problem  ;
+}
+
+unsigned OptimisationEngine::getLastIterationNumber() {
+    return historySetOfIndidual.size();
 }
 
 
@@ -42,7 +61,11 @@ void OptimisationEngine::iterate( int itNumber_l ) {
 
     if (itNumber_l==0 && historySetOfIndidual.size()==0) { init() ;}
     else if (itNumber_l==historySetOfIndidual.size()) nextIteration();
-
+    else if (itNumber_l>historySetOfIndidual.size()) {
+        qDebug()<<"Error : shall compute "<<historySetOfIndidual.size()<<" first";
+        qDebug()<<this;
+        return;
+    }
     std::map< std::string,std::vector<Individual> > &rs=historySetOfIndidual[itNumber_l];
     emit(updateCurves(rs));
     //for (unsigned i=0;i<rs["all"].size();i++) qDebug()<<"i["<<i<<"] : "<<rs["all"][i].toString();
@@ -57,6 +80,7 @@ std::vector<Individual> OptimisationEngine::nonDominatedFront( std::vector<Indiv
 
     for (unsigned i=0;i<setOfIndividuals.size();i++) {
         Individual &ri = setOfIndividuals[i] ;
+        ri.NonDominationOrder=0 ;
         for (unsigned j=0;( j<setOfIndividuals.size() ) && (ri.NonDominationOrder==0);j++) {
             Individual &rj = setOfIndividuals[j] ;
             if (i!=j) {
@@ -122,8 +146,6 @@ void OptimisationEngine::init(  ) {
         problem->evaluateIndividual(rs.back()) ;
     }
 
-
-
     std::map<std::string,std::vector<Individual> > rsm ;
     rsm["nonDominatedFront"]=nonDominatedFront(rs);
     rsm["nonDominatedDecFront"]=decimateFront(sizeOfPopulationTarget,rsm["nonDominatedFront"]);
@@ -151,15 +173,26 @@ void OptimisationEngine::nextIteration(  ) {
             }
     }
 
+    std::map<std::string,std::vector<Individual> > rsm ;
+
     // individual evaluation
+    QTimer *timer = new QTimer(this);
+    timer->start(60000);
     for ( unsigned i = 0; i < rsNew.size() ; i++ ) {
         problem->evaluateIndividual(rsNew[i]) ;
+        QCoreApplication::processEvents () ;
+        if (timer->remainingTime() == 0) {
+            rsm["nonDominatedDecFront"]=nonDominatedFront(rsNew);
+            rsm["all"]=rsNew;
+            emit(updateCurves(rsm));
+            timer->start(60000);
+        }
     }
 
-    std::map<std::string,std::vector<Individual> > rsm ;
     rsm["nonDominatedFront"]=nonDominatedFront(rsNew);
     rsm["nonDominatedDecFront"]=decimateFront(sizeOfPopulationTarget,rsm["nonDominatedFront"]);
     rsm["all"]=rsNew;
+
 
     //keep N last individuals
     //rsm["nonDominatedFront"].insert(rsm["nonDominatedFront"].end(),historySetOfIndidual.back()["nonDominatedFront"].begin(),historySetOfIndidual.back()["nonDominatedFront"].end());
@@ -168,3 +201,57 @@ void OptimisationEngine::nextIteration(  ) {
 
     historySetOfIndidual.push_back(rsm);
 }
+
+
+
+QDataStream & operator << (QDataStream & out, const OptimisationEngine & l) {
+    out <<l.sizeOfPopulationIni<<l.sizeOfPopulationTarget;
+    out<<l.historySetOfIndidual.size();
+    for (unsigned i=0;i<l.historySetOfIndidual.size();i++) {
+        const std::map<std::string,std::vector<Individual> > & m=l.historySetOfIndidual[i] ;
+        std::map<std::string,std::vector<Individual> >::const_iterator it;
+        out<<m.size();
+        for (it=m.begin(); it != m.end(); ++it) {
+            out<<QString::fromStdString(it->first);
+            out<<it->second.size();
+            for (unsigned k=0;k<it->second.size();k++) {
+                out<<it->second[k];
+            }
+        }
+    }
+    return out ;
+}
+
+QDataStream & operator >> (QDataStream & in, OptimisationEngine & l){
+    in>>l.sizeOfPopulationIni>>l.sizeOfPopulationTarget;
+    unsigned hsize;
+    in>>hsize;
+    l.historySetOfIndidual.resize(hsize) ;
+    qDebug()<<l.sizeOfPopulationIni;
+    qDebug()<<l.sizeOfPopulationTarget;
+    qDebug()<<hsize;
+
+    for (unsigned i=0;i<l.historySetOfIndidual.size();i++) {
+        std::map<std::string,std::vector<Individual> > & m=l.historySetOfIndidual[i] ;
+        unsigned msize;
+        in>>msize;
+        qDebug()<<"i:"<<i;
+        qDebug()<<"msize:"<<msize;
+        for (unsigned j=0; j<msize ; j++) {
+            QString mkey ;
+            unsigned mvalSize ;
+            in>>mkey ;
+            in>>mvalSize ;
+            qDebug()<<"j:"<<j;
+            qDebug()<<"mkey:"<<mkey;
+            qDebug()<<"mvalSize:"<<mvalSize;
+
+            m[mkey.toStdString()].resize(mvalSize) ;
+            for (unsigned k=0;k<mvalSize;k++) {
+                in>>m[mkey.toStdString()][k];
+            }
+        }
+    }
+    return in ;
+}
+
