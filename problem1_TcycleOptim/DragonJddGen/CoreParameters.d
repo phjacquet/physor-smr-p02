@@ -1,11 +1,11 @@
 *** COMBUSTIBLE
-Alpha	1.15816	(E1/E2)
+Alpha	1.096493	(E1/E2)
 E1	VAR.Comb.E1
 E2	VAR.Comb.E2
 VecteurPu Magnox.3000
 
 *** COEUR GEOMETRIE
-HauteurCoeur		546.000
-PNucleaire	416.061010
+HauteurCoeur		86.8211500
+PNucleaire	386.552750
 RayonCoeur		100.
 	

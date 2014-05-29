@@ -47,8 +47,6 @@ MainWindow::MainWindow()
         connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
     for (unsigned i = 0; i < objPlots.size(); i++)
         connect(objPlots[objPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
-
-    d_optimisationEngine->iterate(0);
 }
 
 void MainWindow::exportToPDF() {
@@ -87,10 +85,6 @@ void MainWindow::exportToPDF() {
     painter.end();
 }
 
-void MainWindow::iterButtonReleased(  ) {
-    d_iterNumberSpinBox->setMaximum(d_iterNumberSpinBox->value()+1);
-    d_iterNumberSpinBox->setValue(d_iterNumberSpinBox->value()+1);
-}
 
 void MainWindow::openButtonReleased(  ) {
     qRegisterMetaTypeStreamOperators<OptimisationEngine>("OptimisationEngine");
@@ -117,9 +111,8 @@ void MainWindow::openButtonReleased(  ) {
     connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
 
-    d_iterNumberSpinBox->setMaximum(d_optimisationEngine->getLastIterationNumber());
-    d_iterNumberSpinBox->setValue(d_optimisationEngine->getLastIterationNumber());
-
+    d_iterNumberSpinBox->setMaximum(d_optimisationEngine->getLastIterationNumber()-1);
+    d_iterNumberSpinBox->setValue(d_optimisationEngine->getLastIterationNumber()-1);
 }
 
 void MainWindow::saveButtonReleased(  ) {
@@ -133,6 +126,11 @@ void MainWindow::saveButtonReleased(  ) {
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
     out << qvar;
+}
+
+void MainWindow::iterButtonReleased(  ) {
+    d_iterNumberSpinBox->setMaximum(d_iterNumberSpinBox->value()+1);
+    d_iterNumberSpinBox->setValue(d_iterNumberSpinBox->value()+1);
 }
 
 void MainWindow::computeButtonReleased(  ) {
@@ -150,9 +148,11 @@ QWidget *MainWindow::createComputeTab( QWidget *parent )
     d_iterButton = new QPushButton( page );
     d_iterButton->setText("Iterate");
     d_iterNumberSpinBox = new QSpinBox();
-    d_iterNumberSpinBox->setMaximum(1);
+    d_iterNumberSpinBox->setMinimum(-1);
+    d_iterNumberSpinBox->setMaximum(0);
+    d_iterNumberSpinBox->setValue(-1);
     d_NumberOfIndividuals = new QSpinBox();
-    d_NumberOfIndividuals->setMaximum(10000);
+    d_NumberOfIndividuals->setMaximum(100000);
     d_NumberOfIndividuals->setValue(d_optimisationEngine->getSizeOfPopulation());
     d_computeButton= new QPushButton( page );
     d_computeButton->setText("Compute");

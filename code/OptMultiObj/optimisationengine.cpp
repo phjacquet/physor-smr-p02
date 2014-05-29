@@ -9,10 +9,10 @@
 #include "problem_script.h"
 
 void OptimisationEngine::instantiateProblem() {
-    sizeOfPopulationIni=100 ;
-    sizeOfPopulationTarget=100;
-    //problem = new Problem_ShScriptEval("/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/data") ;
-    problem = new Problem_A() ;
+    sizeOfPopulationIni=50 ;
+    sizeOfPopulationTarget=200;
+    problem = new Problem_ShScriptEval("/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/data") ;
+    //problem = new Problem_A() ;
 }
 
 OptimisationEngine::OptimisationEngine() {
@@ -143,10 +143,27 @@ void OptimisationEngine::init(  ) {
     std::vector<Individual> rs;
     for ( unsigned i = 0; i < sizeOfPopulationIni ; i++ ) {
         rs.push_back(problem->generateIndividual());
-        problem->evaluateIndividual(rs.back()) ;
     }
 
     std::map<std::string,std::vector<Individual> > rsm ;
+    rsm["all"]=rs;
+    emit(updateCurves(rsm));
+    while (QCoreApplication::hasPendingEvents()) QCoreApplication::processEvents () ;
+    // individual evaluation
+    QTimer *timer = new QTimer(this);
+    timer->start(60000);
+    for ( unsigned i = 0; i < rs.size() ; i++ ) {
+        problem->evaluateIndividual(rs[i]) ;
+        //qDebug()<<"time remaining after refresh "<<timer->remainingTime()<<" ms";
+        if (timer->remainingTime() == 0) {
+            rsm["nonDominatedDecFront"]=nonDominatedFront(rs);
+            rsm["all"]=rs;
+            emit(updateCurves(rsm));
+            timer->start(60000);
+        }
+        while (QCoreApplication::hasPendingEvents()) QCoreApplication::processEvents () ;
+    }
+
     rsm["nonDominatedFront"]=nonDominatedFront(rs);
     rsm["nonDominatedDecFront"]=decimateFront(sizeOfPopulationTarget,rsm["nonDominatedFront"]);
     rsm["all"]=rs;
@@ -174,19 +191,23 @@ void OptimisationEngine::nextIteration(  ) {
     }
 
     std::map<std::string,std::vector<Individual> > rsm ;
+    rsm["all"]=rsNew;
+    emit(updateCurves(rsm));
+    while (QCoreApplication::hasPendingEvents()) QCoreApplication::processEvents () ;
 
     // individual evaluation
     QTimer *timer = new QTimer(this);
     timer->start(60000);
     for ( unsigned i = 0; i < rsNew.size() ; i++ ) {
         problem->evaluateIndividual(rsNew[i]) ;
-        QCoreApplication::processEvents () ;
+        //qDebug()<<"time remaining after refresh "<<timer->remainingTime()<<" ms";
         if (timer->remainingTime() == 0) {
             rsm["nonDominatedDecFront"]=nonDominatedFront(rsNew);
             rsm["all"]=rsNew;
             emit(updateCurves(rsm));
             timer->start(60000);
         }
+        while (QCoreApplication::hasPendingEvents()) QCoreApplication::processEvents () ;
     }
 
     rsm["nonDominatedFront"]=nonDominatedFront(rsNew);
