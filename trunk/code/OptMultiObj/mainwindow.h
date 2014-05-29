@@ -20,12 +20,7 @@ class MainWindow: public QMainWindow
 
 public:
     MainWindow();
-
-private:
-    QWidget *createComputeTab( QWidget *parent );
-    QWidget *createPlotTab( QWidget *parent );
-    QWidget *createFileTab( QWidget *parent ) ;
-    void createPlots() ;
+    OptimisationEngine * d_optimisationEngine ;
 
 public Q_SLOTS:
     void getSetOfIndividual( std::map<std::string,std::vector<Individual> > );
@@ -36,7 +31,13 @@ public Q_SLOTS:
     void individualSelection(Plot *, QString , QString , QRectF) ;
     void exportToPDF() ;
 
+
 private:
+    QWidget *createComputeTab( QWidget *parent );
+    QWidget *createPlotTab( QWidget *parent );
+    QWidget *createFileTab( QWidget *parent ) ;
+    void createPlots() ;
+
     QMap<QString,Plot *> paramPlots;
     QMap<QString,Plot *> objPlots;
     std::map<std::string,std::vector<Individual> > currentSetOfIndiduals ;
@@ -51,7 +52,7 @@ private:
     QPushButton * d_openButton ;
     QPushButton * d_saveButton ;
     QPushButton * d_pdfExportButton ;
-    OptimisationEngine * d_optimisationEngine ;
+
 };
 
 #endif

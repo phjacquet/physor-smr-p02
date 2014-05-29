@@ -46,7 +46,7 @@ void Problem_ShScriptEval::evaluateIndividual(Individual & r) {
     QStringList s=qstdout.split(QRegExp(";"));
 
     if (qstderr!="" || s.size() != r.objectives.size()) {
-        qDebug()<<r.toString()<<"\n"<<"stderr="<<qstderr ;
+        qDebug()<<r.toString()<<"\n"<<"stderr="<<qstderr <<"\n"<<"stdout="<<qstdout;
         for (unsigned i=0;i<r.objectives.size() && i<s.size(); i++) {
             r.objectives[i]=0. ;
             }

@@ -150,10 +150,10 @@ GCELL := GEO: ::  TUBEZ 4 5
   RADIUS   0.0 60. 70. 100. 120.
   MESHZ   -20.
           0.0        
-          68.250000  
-          136.500000  
-          204.750000
-          273.000000 
+          10.852644  
+          21.705288  
+          32.557931
+          43.410575 
   MIX 
    11  10    11  11
    1   10     5  11    
@@ -191,10 +191,10 @@ EDNOC := EDI: LIBMIX TRACK FLUX ::
 
 
 BURNUP LIBMIX  := EVO: LIBMIX FLUX TRACK ::
-DEPL 0. 0.001 DAY POWR 6.35 EDIT 3 ;
+DEPL 0. 0.001 DAY POWR 37.15 EDIT 3 ;
 
 BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
-DEPL 0.001 365. DAY POWR 6.35 EDIT 3 ;
+DEPL 0.001 365. DAY POWR 37.15 EDIT 3 ;
 
 *********************************************************
 
@@ -208,10 +208,10 @@ GCELL := GEO: ::  TUBEZ 4 5
   RADIUS   0.0 60. 70. 100. 120.
   MESHZ   -20.
           0.0        
-          68.250000  
-          136.500000  
-          204.750000
-          273.000000 
+          10.852644  
+          21.705288  
+          32.557931
+          43.410575 
   MIX 
    11  10    11  11
    1   10     5  11    
@@ -247,7 +247,7 @@ EDNOC := EDI: LIBMIX TRACK FLUX ::
      SAVE ON 'CORE' ;
 
 BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
-DEPL 365. 730. DAY POWR 6.35 EDIT 3 ;
+DEPL 365. 730. DAY POWR 37.15 EDIT 3 ;
 
      
 *********************************************************
@@ -261,10 +261,10 @@ GCELL := GEO: ::  TUBEZ 4 5
   RADIUS   0.0 60. 70. 100. 120.
   MESHZ   -20.
           0.0        
-          68.250000  
-          136.500000  
-          204.750000
-          273.000000 
+          10.852644  
+          21.705288  
+          32.557931
+          43.410575 
   MIX 
    11  10    11  11
    1   10     5  11    
@@ -300,7 +300,7 @@ EDNOC := EDI: LIBMIX TRACK FLUX ::
      SAVE ON 'CORE' ;
 
 BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
-DEPL 730. 1825. DAY POWR 6.35 EDIT 3 ;
+DEPL 730. 1825. DAY POWR 37.15 EDIT 3 ;
      
 *********************************************************
 
@@ -313,10 +313,10 @@ GCELL := GEO: ::  TUBEZ 4 5
   RADIUS   0.0 60. 70. 100. 120.
   MESHZ   -20.
           0.0        
-          68.250000  
-          136.500000  
-          204.750000
-          273.000000 
+          10.852644  
+          21.705288  
+          32.557931
+          43.410575 
   MIX 
    11  10    11  11
    1   10     5  11    
@@ -352,7 +352,7 @@ EDNOC := EDI: LIBMIX TRACK FLUX ::
      SAVE ON 'CORE' ;
 
 BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
-DEPL 1825. 5475. DAY POWR 6.35 EDIT 3 ;
+DEPL 1825. 5475. DAY POWR 37.15 EDIT 3 ;
      
 *********************************************************
 
@@ -365,10 +365,10 @@ GCELL := GEO: ::  TUBEZ 4 5
   RADIUS   0.0 60. 70. 100. 120.
   MESHZ   -20.
           0.0        
-          68.250000  
-          136.500000  
-          204.750000
-          273.000000 
+          10.852644  
+          21.705288  
+          32.557931
+          43.410575 
   MIX 
    11  10    11  11
    1   10     5  11    
@@ -404,7 +404,7 @@ EDNOC := EDI: LIBMIX TRACK FLUX ::
      SAVE ON 'CORE' ;
 
 BURNUP LIBMIX  := EVO: BURNUP LIBMIX FLUX TRACK ::
-DEPL 5475. 10950. DAY POWR 6.35 EDIT 3 ;
+DEPL 5475. 10950. DAY POWR 37.15 EDIT 3 ;
      
 *********************************************************
 
@@ -417,10 +417,10 @@ GCELL := GEO: ::  TUBEZ 4 5
   RADIUS   0.0 60. 70. 100. 120.
   MESHZ   -20.
           0.0        
-          68.250000  
-          136.500000  
-          204.750000
-          273.000000 
+          10.852644  
+          21.705288  
+          32.557931
+          43.410575 
   MIX 
    11  10    11  11
    1   10     5  11    
