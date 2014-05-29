@@ -15,6 +15,7 @@ class Plot : public QwtPlot
 public:
     Plot( QString, QWidget *parent = NULL );
     void setCurves( QMap<QString, QPolygonF > & ) ;
+    void exportToPDF( ) ;
 
 private:
     QString name ;

@@ -12,7 +12,7 @@ class QTabWidget ;
 class QPushButton;
 class QSpinBox ;
 class OptimisationEngine ;
-
+class QCheckBox ;
 
 class MainWindow: public QMainWindow
 {
@@ -34,6 +34,7 @@ public Q_SLOTS:
     void saveButtonReleased(  );
     void computeButtonReleased(  ) ;
     void individualSelection(Plot *, QString , QString , QRectF) ;
+    void exportToPDF() ;
 
 private:
     QMap<QString,Plot *> paramPlots;
@@ -49,7 +50,7 @@ private:
     QTabWidget * d_panel ;
     QPushButton * d_openButton ;
     QPushButton * d_saveButton ;
-
+    QPushButton * d_pdfExportButton ;
     OptimisationEngine * d_optimisationEngine ;
 };
 
