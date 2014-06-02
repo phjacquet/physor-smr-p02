@@ -8,6 +8,7 @@
 #include <qwt_legend.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_renderer.h>
+#include <QGuiApplication>
 
 Plot::Plot( QString l_name, QWidget *parent ):
     QwtPlot( parent )
@@ -34,14 +35,23 @@ Plot::Plot( QString l_name, QWidget *parent ):
     panner2->setMouseButton (Qt::LeftButton,Qt::ControlModifier) ;
     QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
     magnifier->setMouseButton( Qt::NoButton );
-    QwtPlotPicker *  picker=new QwtPlotPicker ( canvas() );
-    picker->setTrackerMode( QwtPicker::AlwaysOn );
-    picker->setTrackerPen(QPen(QColor(Qt::cyan))) ;
-    picker->setStateMachine( new QwtPickerDragRectMachine() );
-    picker->setRubberBand( QwtPlotPicker::RectRubberBand );
-    picker->setRubberBandPen(QPen(QColor(Qt::white)));
+    QwtPlotPicker *  pickerSel=new QwtPlotPicker ( canvas() );
+    pickerSel->setTrackerMode( QwtPicker::AlwaysOn );
+    pickerSel->setTrackerPen(QPen(QColor(Qt::cyan))) ;
+    pickerSel->setStateMachine( new QwtPickerDragRectMachine() );
+    pickerSel->setRubberBand( QwtPlotPicker::RectRubberBand );
+    pickerSel->setRubberBandPen(QPen(QColor(Qt::white)));
 
-    connect(picker,SIGNAL(selected(QRectF)),this, SLOT(pickerSelection(QRectF))) ;
+    QwtPlotPicker *  pickerUnsel=new QwtPlotPicker ( canvas() );
+   // pickerUnsel->setMouseTracking(false);
+    pickerUnsel->setMousePattern(QwtEventPattern::MouseSelect1,Qt::RightButton);
+    pickerUnsel->setStateMachine( new QwtPickerDragRectMachine() );
+    pickerUnsel->setRubberBand( QwtPlotPicker::RectRubberBand );
+    pickerUnsel->setRubberBandPen(QPen(QColor(Qt::blue)));
+
+
+    connect(pickerSel,SIGNAL(selected(QRectF)),this, SLOT(pickerSelection(QRectF))) ;
+    connect(pickerUnsel,SIGNAL(selected(QRectF)),this, SLOT(pickerUnselection(QRectF))) ;
 
     sortingCurves.push_back("all");
     sortingCurves.push_back("nonDominatedFront");
@@ -87,7 +97,12 @@ void Plot::setCurves( QMap<QString, QPolygonF > & curves )
 
 void Plot::pickerSelection(QRectF rect) {
     //qDebug()<<"void Plot::pickerSelection(QRectF)";
-    emit(defineSelection(this,ordName,absName,rect));
+        emit(defineSelection(this,ordName,absName,rect));
+        qDebug()<<"select";
 }
 
 
+void Plot::pickerUnselection(QRectF rect) {
+        emit(defineUnselection(this,ordName,absName,rect));
+        qDebug()<<"unselect";
+}

@@ -1,7 +1,7 @@
 #include "problem_b.h"
 #include <QtMath>
 
-Problem_B::Problem_B() : AbstractProblem(3,4)
+Problem_B::Problem_B() : AbstractProblem(3,2)
 {
 }
 
@@ -32,7 +32,7 @@ void Problem_B::evaluateIndividual(Individual & r) {
 }
 */
 
-
+/*
 void Problem_B::evaluateIndividual(Individual & r) {
     //arbitaire : f0 est minimisé pour ||M(x,y) - M0||=R0.
     //arbitaire : f1 est minimisé pour ||M(x,y) - M1||=R1.
@@ -81,7 +81,7 @@ void Problem_B::evaluateIndividual(Individual & r) {
 
     numberOfEvaluations++ ;
 }
-
+*/
 
 /*
 void Problem_B::evaluateIndividual(Individual & r) {
@@ -116,3 +116,20 @@ void Problem_B::evaluateIndividual(Individual & r) {
 }
 
 */
+
+void Problem_B::evaluateIndividual(Individual & r) {
+    if (r.getEvaluationStatus()) return;
+
+    double x0,x1,x2,sqr3;
+    x0=r.parameters[0] ;
+    x1=r.parameters[1] ;
+    x2=r.parameters[2] ;
+    sqr3=1./sqrt(3.);
+
+    r.objectives[0]=1-exp(-pow(x0-sqr3,2)-pow(x1-sqr3,2.)-pow(x2-sqr3,2.)) ;
+    r.objectives[1]=1-exp(-pow(x0+sqr3,2)-pow(x1+sqr3,2.)-pow(x2+sqr3,2.)) ;
+
+    r.setEvaluationStatus(true);
+    numberOfEvaluations++;
+}
+

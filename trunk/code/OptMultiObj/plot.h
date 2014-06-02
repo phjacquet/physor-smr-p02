@@ -29,9 +29,11 @@ private:
 
 public Q_SLOTS:
     void pickerSelection(QRectF);
+    void pickerUnselection(QRectF);
 
 Q_SIGNALS:
     void defineSelection(Plot *, QString ordName, QString absName, QRectF);
+    void defineUnselection(Plot *, QString ordName, QString absName, QRectF);
 
 };
 
