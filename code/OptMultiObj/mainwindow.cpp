@@ -43,8 +43,10 @@ MainWindow::MainWindow()
     connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
     connect(d_pdfExportButton,SIGNAL(released()),this, SLOT(exportToPDF()) ) ;
-    for (unsigned i = 0; i < paramPlots.size(); i++)
+    for (unsigned i = 0; i < paramPlots.size(); i++) {
         connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
+        connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineUnselection(Plot*,QString,QString,QRectF)),this, SLOT(individualUnselection(Plot*,QString,QString,QRectF)) ) ;
+    }
     for (unsigned i = 0; i < objPlots.size(); i++)
         connect(objPlots[objPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
 }
@@ -82,6 +84,7 @@ void MainWindow::exportToPDF() {
             return ;
         }
     }
+    painter.drawText(10, 10, "END OF RESULTS FILE");
     painter.end();
 }
 
@@ -311,9 +314,7 @@ void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual
 void MainWindow::individualSelection(Plot * plot, QString ordName, QString absName, QRectF rect) {
 //    qDebug()<<"get signal : individualSelection(this, "<<absName<<","<<ordName<<", ["<<rect.left()<<"-"<<rect.right()<<"]x["<<rect.top()<<"-"<<rect.bottom()<<"] )";
     std::vector<Individual> set = currentSetOfIndiduals["nonDominatedFront"];
-    //currentSetOfIndiduals["sel"].clear() ;
     int counter=0;
-
     for ( unsigned i = 0; i < set.size() ; i++ )      {
         bool keepIt=true;
         for (unsigned p = 0; p < d_optimisationEngine->getNumberOfParameters(); p++) {
@@ -340,10 +341,42 @@ void MainWindow::individualSelection(Plot * plot, QString ordName, QString absNa
         }
         if (keepIt) {currentSetOfIndiduals["sel"].push_back(set[i]) ; counter++;}
     }
-
     if (counter==0) currentSetOfIndiduals["sel"].clear() ;
-
     getSetOfIndividual( currentSetOfIndiduals ) ;
 }
 
 
+void MainWindow::individualUnselection(Plot * plot, QString ordName, QString absName, QRectF rect) {
+    qDebug()<<"get signal : individualUnselection(this, "<<absName<<","<<ordName<<", ["<<rect.left()<<"-"<<rect.right()<<"]x["<<rect.top()<<"-"<<rect.bottom()<<"] )";
+    std::vector<Individual> set = currentSetOfIndiduals["sel"];
+    currentSetOfIndiduals["sel"].clear();
+    int counter=0;
+    for ( unsigned i = 0; i < set.size() ; i++ )      {
+        bool unkeepIt=true;
+        for (unsigned p = 0; p < d_optimisationEngine->getNumberOfParameters(); p++) {
+            QString pName="X"+QString::number(p);
+            double val=set[i].parameters[p] ;
+            if (pName==absName)
+                if(rect.left()>val || rect.right()<val )
+                    unkeepIt=false;
+            if (pName==ordName)
+                if( rect.top()>val || rect.bottom()<val )
+                    unkeepIt=false ;
+//            qDebug()<<i<<" "<<p<<" "<<pName<<" "<<absName<<" "<<ordName<<" "<<set[i].parameters[p]<<" "<<unkeepIt;
+        }
+        for (unsigned o = 0; o < d_optimisationEngine->getNumberOfObjectives(); o++) {
+            QString pName="F"+QString::number(o);
+            double val=set[i].objectives[o] ;
+            if (pName==absName)
+                if(rect.left()>val || rect.right()<val )
+                    unkeepIt=false;
+            if (pName==ordName)
+                if( rect.top()>val || rect.bottom()<val )
+                    unkeepIt=false ;
+//            qDebug()<<i<<" "<<p<<" "<<pName<<" "<<absName<<" "<<ordName<<" "<<set[i].parameters[p]<<" "<<unkeepIt;
+        }
+        if (unkeepIt==false) {currentSetOfIndiduals["sel"].push_back(set[i]) ; counter++;}
+    }
+    if (counter==0) currentSetOfIndiduals["sel"].clear() ;
+    getSetOfIndividual( currentSetOfIndiduals ) ;
+}

@@ -29,6 +29,7 @@ public Q_SLOTS:
     void saveButtonReleased(  );
     void computeButtonReleased(  ) ;
     void individualSelection(Plot *, QString , QString , QRectF) ;
+    void individualUnselection(Plot *, QString , QString , QRectF) ;
     void exportToPDF() ;
 
 

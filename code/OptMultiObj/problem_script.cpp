@@ -11,6 +11,10 @@ Problem_ShScriptEval::Problem_ShScriptEval(QString f) : AbstractProblem(0,0)  {
     jddFilename=f;
     QFile file(jddFilename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        // default P3xO3
+        numberOfParameters=3;
+        numberOfObjectives=3;
+        qDebug()<<"file "<<jddFilename<<" not found - default P3xO3 problem for reading results";
         return ;
     }
 
@@ -20,6 +24,7 @@ Problem_ShScriptEval::Problem_ShScriptEval(QString f) : AbstractProblem(0,0)  {
         QStringList s=ts.readLine().split("=");
         map[s.front()]=s.back() ;
     }
+
     numberOfParameters=map["numberOfParameters"].toInt() ;
     numberOfObjectives=map["numberOfObjectives"].toInt() ;
     scriptFilename=map["scriptFilename"];
