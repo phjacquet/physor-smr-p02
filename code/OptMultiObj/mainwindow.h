@@ -13,6 +13,7 @@ class QPushButton;
 class QSpinBox ;
 class OptimisationEngine ;
 class QCheckBox ;
+class QListWidget ;
 
 class MainWindow: public QMainWindow
 {
@@ -30,7 +31,11 @@ public Q_SLOTS:
     void computeButtonReleased(  ) ;
     void individualSelection(Plot *, QString , QString , QRectF) ;
     void individualUnselection(Plot *, QString , QString , QRectF) ;
+    void updateSelSet() ;
+    void clickSelSet() ;
+    void removeSelSet() ;
     void exportToPDF() ;
+    void exportToTXT() ;
 
 
 private:
@@ -53,6 +58,10 @@ private:
     QPushButton * d_openButton ;
     QPushButton * d_saveButton ;
     QPushButton * d_pdfExportButton ;
+    QPushButton * d_txtExportButton ;
+    QListWidget * d_IndivSetSelListWidget ;
+    QPushButton * d_IndivSetSelUpdateButton ;
+    QPushButton * d_IndivSetSelRemoveButton ;
 
 };
 

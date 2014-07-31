@@ -12,6 +12,7 @@
 #include <QVariant>
 #include <QPrinter>
 #include <QDateTime>
+#include <QListWidget>
 #include <qwt_plot_renderer.h>
 
 #include "optimisationengine.h"
@@ -43,12 +44,20 @@ MainWindow::MainWindow()
     connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
     connect(d_pdfExportButton,SIGNAL(released()),this, SLOT(exportToPDF()) ) ;
+    connect(d_txtExportButton,SIGNAL(released()),this, SLOT(exportToTXT()) ) ;
     for (unsigned i = 0; i < paramPlots.size(); i++) {
         connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
         connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineUnselection(Plot*,QString,QString,QRectF)),this, SLOT(individualUnselection(Plot*,QString,QString,QRectF)) ) ;
     }
-    for (unsigned i = 0; i < objPlots.size(); i++)
+    for (unsigned i = 0; i < objPlots.size(); i++) {
         connect(objPlots[objPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
+        connect(objPlots[objPlots.keys().at(i)],SIGNAL(defineUnselection(Plot*,QString,QString,QRectF)),this, SLOT(individualUnselection(Plot*,QString,QString,QRectF)) ) ;
+    }
+
+    connect(d_IndivSetSelUpdateButton,SIGNAL(released()),this, SLOT(updateSelSet()) ) ;
+    connect(d_IndivSetSelRemoveButton,SIGNAL(released()),this, SLOT(removeSelSet()) ) ;
+    connect(d_IndivSetSelListWidget,SIGNAL(clicked(QModelIndex)),this, SLOT(clickSelSet()) ) ;
+
 }
 
 void MainWindow::exportToPDF() {
@@ -86,6 +95,21 @@ void MainWindow::exportToPDF() {
     }
     painter.drawText(10, 10, "END OF RESULTS FILE");
     painter.end();
+}
+
+void MainWindow::exportToTXT() {
+    QString fileName="results.txt";
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+            return;
+    QTextStream out(&file);
+    std::map<std::string,std::vector<Individual> >::iterator it ;
+    for (it = currentSetOfIndiduals.begin();it!=currentSetOfIndiduals.end();it++) {
+        std::string setName=it->first ;
+        std::vector<Individual> set = it->second ;
+        for ( unsigned i = 0; i < set.size() ; i++ )
+            out<<QString::fromStdString(setName)<<"\t"<<set[i].toString()<<"\n";
+    }
 }
 
 
@@ -185,12 +209,26 @@ QWidget *MainWindow::createPlotTab( QWidget *parent )
     QGridLayout *layout = new QGridLayout( page );
     d_pdfExportButton=new QPushButton("export",page);
     d_pdfExportButton->setChecked(false);
+    d_txtExportButton=new QPushButton("export",page);
+    d_txtExportButton->setChecked(false);
+    d_IndivSetSelListWidget=new QListWidget( page );
+    d_IndivSetSelListWidget->addItem("add") ;
+    d_IndivSetSelListWidget->setCurrentRow(d_IndivSetSelListWidget->count()-1);
+    d_IndivSetSelUpdateButton=new QPushButton("update",page);
+    d_IndivSetSelRemoveButton=new QPushButton("remove",page);
     layout->addWidget( new QLabel( "Use to plot", page ), 0, 0 );
     layout->addWidget( new QLabel( "Export to pdf", page ), 1, 0 );
+    layout->addWidget( new QLabel( "Export to txt", page ), 2, 0 );
+    layout->addWidget( new QLabel( "Set Definition", page ), 3, 0 );
     layout->addWidget( d_pdfExportButton, 1, 1 );
-    layout->addLayout( new QHBoxLayout(), 2, 0 );
-    layout->setColumnStretch( 2, 10 );
-    layout->setRowStretch( 2, 10 );
+    layout->addWidget( d_txtExportButton, 2, 1 );
+    layout->addWidget( d_IndivSetSelListWidget, 3, 1 );
+    layout->addWidget( d_IndivSetSelUpdateButton, 3, 2 );
+    layout->addWidget( d_IndivSetSelRemoveButton, 3, 3 );
+    int lastline=4;
+    layout->addLayout( new QHBoxLayout(), lastline, 0 );
+    layout->setColumnStretch( lastline, 10 );
+    layout->setRowStretch( lastline, 10 );
     return page;
 }
 
@@ -373,10 +411,50 @@ void MainWindow::individualUnselection(Plot * plot, QString ordName, QString abs
             if (pName==ordName)
                 if( rect.top()>val || rect.bottom()<val )
                     unkeepIt=false ;
-//            qDebug()<<i<<" "<<p<<" "<<pName<<" "<<absName<<" "<<ordName<<" "<<set[i].parameters[p]<<" "<<unkeepIt;
+//            qDebug()<<i<<" "<<o<<" "<<pName<<" "<<absName<<" "<<ordName<<" "<<set[i].objectives[o]<<" "<<unkeepIt;
         }
         if (unkeepIt==false) {currentSetOfIndiduals["sel"].push_back(set[i]) ; counter++;}
     }
     if (counter==0) currentSetOfIndiduals["sel"].clear() ;
     getSetOfIndividual( currentSetOfIndiduals ) ;
+}
+
+void MainWindow::updateSelSet() {
+    //qDebug()<<"updateSelSet()" ;
+    if (d_IndivSetSelListWidget->selectedItems().size()==0) return ;
+    //qDebug()<<d_IndivSetSelListWidget->currentItem()->text() ;
+
+    std::string setName("set") ;
+    if (d_IndivSetSelListWidget->currentItem()->text()=="add") {
+        d_IndivSetSelListWidget->addItem(QString::number(d_IndivSetSelListWidget->count()));
+        d_IndivSetSelListWidget->setCurrentRow(d_IndivSetSelListWidget->count()-1);
+    }
+    setName=setName+d_IndivSetSelListWidget->currentItem()->text().toStdString() ;
+    currentSetOfIndiduals[setName]=currentSetOfIndiduals["sel"];
+    d_IndivSetSelListWidget->currentItem()->setForeground(QBrush(Qt::black));
+}
+
+void MainWindow::clickSelSet() {
+    std::string setName("set") ;
+    if (d_IndivSetSelListWidget->currentItem()->text()=="add") return ;
+
+    setName=setName+d_IndivSetSelListWidget->currentItem()->text().toStdString() ;
+    if (currentSetOfIndiduals.find(setName) != currentSetOfIndiduals.end() )
+        currentSetOfIndiduals["sel"]=currentSetOfIndiduals[setName];
+    getSetOfIndividual( currentSetOfIndiduals ) ;
+}
+
+void MainWindow::removeSelSet() {
+    qDebug()<<"removeSelSet()";
+
+    if (d_IndivSetSelListWidget->selectedItems().size()==0) return ;
+
+    std::string setName("set") ;
+    if (d_IndivSetSelListWidget->currentItem()->text()=="add") return ;
+
+    setName=setName+d_IndivSetSelListWidget->currentItem()->text().toStdString() ;
+    if (currentSetOfIndiduals.find(setName) != currentSetOfIndiduals.end() )
+        currentSetOfIndiduals.erase(currentSetOfIndiduals.find(setName));
+
+    d_IndivSetSelListWidget->currentItem()->setForeground(QBrush(Qt::gray));
 }
