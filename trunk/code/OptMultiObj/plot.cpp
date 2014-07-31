@@ -69,10 +69,22 @@ Plot::Plot( QString l_name, QWidget *parent ):
     legendsName[sortingCurves[3]]="sel";
 }
 void Plot::exportToPDF() {
+    int symbolSizeScreen=2;
+    int symbolSizePDF=10;
+
+    for (int c=0;c<sortingCurves.size() && c<d_curves.size();c++)
+        d_curves[c]->setSymbol(new QwtSymbol( QwtSymbol::Cross,Qt::NoBrush, d_curves[c]->pen(), QSize( symbolSizePDF,symbolSizePDF) ) );
+    replot();
+
     QwtPlotRenderer renderer;
     renderer.renderDocument(this, name+".png", QSizeF(200, 200), 100);
     renderer.renderDocument(this, name+".pdf", QSizeF(200, 200), 100);
     qDebug()<<"export plot (name:"<<name<<") to files : "<<name+".pdf/.png";
+
+    for (int c=0;c<sortingCurves.size() && c<d_curves.size();c++)
+        d_curves[c]->setSymbol(new QwtSymbol( QwtSymbol::Cross,Qt::NoBrush, d_curves[c]->pen(), QSize( symbolSizeScreen,symbolSizeScreen) ) );
+    replot();
+
 }
 
 void Plot::setCurves( QMap<QString, QPolygonF > & curves )
