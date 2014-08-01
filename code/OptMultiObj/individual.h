@@ -22,6 +22,7 @@ public:
 
     std::vector<double> parameters ;
     std::vector<double> objectives ;
+    QString comment ;
     int NonDominationOrder ;
     double nearestIndividualDistance ;
 private:

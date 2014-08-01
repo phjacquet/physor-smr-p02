@@ -93,8 +93,8 @@ QString Individual::toString() {
         r+=QString::number(objectives[i])+";" ;
     r+=" " ;
     r+="(NonDominationOrder);";
-        r+=QString::number(NonDominationOrder)+";" ;
-
+    r+=QString::number(NonDominationOrder)+";" ;
+    r+=comment +";" ;
     return r ;
 }
 
@@ -105,6 +105,7 @@ QDataStream & operator << (QDataStream & out, const Individual & l) {
         out<<l.parameters[i];
     for (unsigned i=0;i<l.objDim;i++)
         out<<l.objectives[i];
+    out<<l.comment ;
     return out ;
 }
 
@@ -117,6 +118,7 @@ QDataStream & operator >> (QDataStream & in, Individual & l)  {
         in >>l.parameters[i];
     for (unsigned i=0;i<l.objDim;i++)
         in >>l.objectives[i];
+    in>>l.comment ;
     //qDebug()<<l.toString();
     return in ;
 }

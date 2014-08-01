@@ -24,6 +24,7 @@ public:
     OptimisationEngine * d_optimisationEngine ;
 
 public Q_SLOTS:
+    void getSetOfIndividualFromOptEng( std::map<std::string,std::vector<Individual> > );
     void getSetOfIndividual( std::map<std::string,std::vector<Individual> > );
     void iterButtonReleased(  );
     void openButtonReleased(  );

@@ -41,7 +41,7 @@ MainWindow::MainWindow()
     connect(d_openButton,SIGNAL(released()),this, SLOT(openButtonReleased())) ;
     connect(d_saveButton,SIGNAL(released()),this, SLOT(saveButtonReleased())) ;
     connect(d_iterNumberSpinBox,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(iterate(int))) ;
-    connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
+    connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividualFromOptEng(std::map<std::string,std::vector<Individual> >))) ;
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
     connect(d_pdfExportButton,SIGNAL(released()),this, SLOT(exportToPDF()) ) ;
     connect(d_txtExportButton,SIGNAL(released()),this, SLOT(exportToTXT()) ) ;
@@ -298,6 +298,20 @@ void MainWindow::createPlots() {
         }
     }
     qDebug()<<"ok";
+}
+
+void MainWindow::getSetOfIndividualFromOptEng( std::map<std::string,std::vector<Individual> > setOfIndiduals_l ) {
+    qDebug()<<"MainWindow::getSetOfIndividualFromOptEng( )" ;
+    qRegisterMetaTypeStreamOperators<OptimisationEngine>("OptimisationEngine");
+    qMetaTypeId<OptimisationEngine>();
+    QString fileName="./res.bak";
+    qDebug()<<"save in file :"<<fileName;
+    QVariant qvar = QVariant::fromValue(* d_optimisationEngine);
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    QDataStream out(&file);
+    out << qvar;
+    getSetOfIndividual(setOfIndiduals_l);
 }
 
 void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual> > setOfIndiduals_l ) {
