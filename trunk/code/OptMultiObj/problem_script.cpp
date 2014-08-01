@@ -50,11 +50,12 @@ void Problem_ShScriptEval::evaluateIndividual(Individual & r) {
 
     QStringList s=qstdout.split(QRegExp(";"));
 
-    if (qstderr!="" || s.size() != r.objectives.size()) {
+    if (qstderr!="" || s.size() != r.objectives.size() + 1) {
         qDebug()<<r.toString()<<"\n"<<"stderr="<<qstderr <<"\n"<<"stdout="<<qstdout;
         for (unsigned i=0;i<r.objectives.size() && i<s.size(); i++) {
             r.objectives[i]=0. ;
             }
+        r.comment="Evaluation Failed" ;
         evaluationOk=false ;
     }
     else {
@@ -69,6 +70,7 @@ void Problem_ShScriptEval::evaluateIndividual(Individual & r) {
         }
     }
 
+    r.comment=s.back();
     r.setEvaluationStatus(evaluationOk);
-    numberOfEvaluations++;
+    numberOfEvaluations++ ;
 }
