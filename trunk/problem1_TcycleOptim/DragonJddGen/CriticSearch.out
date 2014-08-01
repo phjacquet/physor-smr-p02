@@ -3,15 +3,15 @@ Generateur de jeu de donnees pour Dragon - test
 Version X.X
 _________________________________________
 CIBLE keff = 1.1
-E=8 Alpha=1.22784
-enrichissement : E1=8.81815570238437230683 E2=7.18184429761562769320
+E=8 Alpha=1.12145
+enrichissement : E1=8.45798863984538876712 E2=7.54201136015461123288
 enrichissement arrond. : E1=8 E2=7
 geometry.core.pl 
-224.657000 ./files/DragonCoreGeom_TGE.templ
+88.969730 ./files/DragonCoreGeom_TGE.templ
 execute core with /home/physor/bin/POLYMTL/VERSION4/Version4_lgpl/Donjon/bin/Linux i686_gfortran/Donjon
 use the existing directory run
-RunDirectory: /tmp/rundir24
-/tmp/rundir24
+RunDirectory: /tmp/rundir25
+/tmp/rundir25
 /home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/data/core.access script terminated
 link DLIB_J3 to /home/physor/data/neutro/VERSION4/LIB/draglibJeff3p1p2SHEM295
 link DLIB_J3XMAS to /home/physor/data/neutro/VERSION4/LIB/draglibJef2p2 DLIB_J3XMAS
@@ -42,16 +42,16 @@ the listing is located on ./run
  @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
  @CHECK FOR WARNINGS IN LISTING
  @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL
- ++ TRACKING CALLED=  73 TIMES FINAL KINF=7.422054E-01 FINAL KEFF=7.465919E-01 B2= 0.00000E+00 PRECISION= 1.11E-04
-E=20 Alpha=1.22784
-enrichissement : E1=22.04538925596093076708 E2=17.95461074403906923302
-enrichissement arrond. : E1=22 E2=17
+ ++ TRACKING CALLED=  70 TIMES FINAL KINF=6.436453E-01 FINAL KEFF=6.436724E-01 B2= 0.00000E+00 PRECISION= 2.55E-03
+E=20 Alpha=1.12145
+enrichissement : E1=21.14497159961347191780 E2=18.85502840038652808221
+enrichissement arrond. : E1=21 E2=18
 geometry.core.pl 
-224.657000 ./files/DragonCoreGeom_TGE.templ
+88.969730 ./files/DragonCoreGeom_TGE.templ
 execute core with /home/physor/bin/POLYMTL/VERSION4/Version4_lgpl/Donjon/bin/Linux i686_gfortran/Donjon
 use the existing directory run
-RunDirectory: /tmp/rundir24
-/tmp/rundir24
+RunDirectory: /tmp/rundir25
+/tmp/rundir25
 /home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/data/core.access script terminated
 link DLIB_J3 to /home/physor/data/neutro/VERSION4/LIB/draglibJeff3p1p2SHEM295
 link DLIB_J3XMAS to /home/physor/data/neutro/VERSION4/LIB/draglibJef2p2 DLIB_J3XMAS
@@ -82,16 +82,16 @@ the listing is located on ./run
  @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
  @CHECK FOR WARNINGS IN LISTING
  @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL
- ++ TRACKING CALLED=  73 TIMES FINAL KINF=1.344443E+00 FINAL KEFF=1.353324E+00 B2= 0.00000E+00 PRECISION= 2.09E-04
-E=14.9897 Alpha=1.22784
-enrichissement : E1=16.52268856650387819596 E2=13.45671143349612180411
-enrichissement arrond. : E1=16 E2=13 E=14
+ ++ TRACKING CALLED=  71 TIMES FINAL KINF=1.130325E+00 FINAL KEFF=1.146435E+00 B2= 0.00000E+00 PRECISION= 1.39E-03
+E=18.8917 Alpha=1.12145
+enrichissement : E1=19.97322299842089137147 E2=17.81017700157910862853
+enrichissement arrond. : E1=19 E2=17 E=18
 geometry.core.pl 
-224.657000 ./files/DragonCoreGeom_TGE.templ
+88.969730 ./files/DragonCoreGeom_TGE.templ
 execute core with /home/physor/bin/POLYMTL/VERSION4/Version4_lgpl/Donjon/bin/Linux i686_gfortran/Donjon
 use the existing directory run
-RunDirectory: /tmp/rundir24
-/tmp/rundir24
+RunDirectory: /tmp/rundir25
+/tmp/rundir25
 /home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/data/core.access script terminated
 link DLIB_J3 to /home/physor/data/neutro/VERSION4/LIB/draglibJeff3p1p2SHEM295
 link DLIB_J3XMAS to /home/physor/data/neutro/VERSION4/LIB/draglibJef2p2 DLIB_J3XMAS
@@ -122,7 +122,7 @@ the listing is located on ./run
  @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
  @CHECK FOR WARNINGS IN LISTING
  @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL
- ++ TRACKING CALLED=  76 TIMES FINAL KINF=1.120269E+00 FINAL KEFF=1.127025E+00 B2= 0.00000E+00 PRECISION= 1.82E-04
-E=14.0383 Alpha=1.22784
-enrichissement : E1=15.47398939959781671937 E2=12.60261060040218328069
-enrichissement arrond. : E1=15 E2=12 E=13
+ ++ TRACKING CALLED=  69 TIMES FINAL KINF=1.071956E+00 FINAL KEFF=1.083663E+00 B2= 0.00000E+00 PRECISION= 1.16E-03
+E=18.5205 Alpha=1.12145
+enrichissement : E1=19.58077232553206533268 E2=17.46022767446793466733
+enrichissement arrond. : E1=19 E2=17 E=18

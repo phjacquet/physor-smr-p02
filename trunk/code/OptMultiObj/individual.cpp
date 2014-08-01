@@ -94,7 +94,7 @@ QString Individual::toString() {
     r+=" " ;
     r+="(NonDominationOrder);";
     r+=QString::number(NonDominationOrder)+";" ;
-    r+=comment +";" ;
+    r+=comment.simplified() +";" ;
     return r ;
 }
 

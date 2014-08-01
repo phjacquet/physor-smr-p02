@@ -9,8 +9,8 @@ PNUCLVAR=`echo $3|sed s#e#*10^#`
 #***********************************************************************************************
 #DEFINITION DU RANGE DES PARAMETRES
 Range_APLHA=(0.3 1.1)
-Range_HC=(100. 600.)
-Range_PNUCL=(10. 600.)
+Range_HC=(70. 200.)
+Range_PNUCL=(10. 400.)
 
 
 #***********************************************************************************************
@@ -54,8 +54,9 @@ TCYCLEtarget=20. # 20 ans
 f1=`echo "($MC-$MCtarget)^2"|bc -l `
 f2=`echo "($E-$Etarget)^2"|bc -l `
 f3=`echo "($TCYCLE/365.-$TCYCLEtarget)^2"|bc -l `
+comment="COMMENT= $ALPHAVAR $HCVAR $PNUCLVAR $f1 $f2 $f3 { $ALPHA $HC $PNUCL }"
 
-echo "$f1 ; $f2 ; $f3"
+echo "$f1 ; $f2 ; $f3 ; $comment"
 echo "$ALPHAVAR ; $HCVAR ; $PNUCLVAR ; $f1 ; $f2 ; $f3 ; { $ALPHA $HC $PNUCL } ; { `cat results` } " >> $lpwd/script.out
 else
 echo "Calcul non converge : {$ALPHAVAR ; $HCVAR ; $PNUCLVAR} => { $ALPHA $HC $PNUCL } => { `cat results` }" >&2
