@@ -166,7 +166,7 @@ void OptimisationEngine::nextIteration(  ) {
             for (unsigned k=0;k<i_multiplicity || k<1; k++) {
                 //double radius = rsNew[i].nearestIndividualDistance*2 ;
                 //if (historySetOfIndidual.size()<10) radius=0.1 ;
-                double radius = 0.2*qrand()/double(RAND_MAX) ;
+                double radius = 0.4*qrand()/double(RAND_MAX) ;
 
                 Individual m=rsNew[i].mutation(radius) ;
                 rsNew.push_back(m) ;
