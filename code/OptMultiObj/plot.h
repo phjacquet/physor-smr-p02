@@ -24,7 +24,7 @@ private:
 
     QVector<QString> sortingCurves;
     QVector<QwtPlotCurve*> d_curves;
-    QMap<QString,Qt::GlobalColor> colors;
+    QMap<QString,QColor> colors;
     QMap<QString,QString> legendsName;
 
 public Q_SLOTS:

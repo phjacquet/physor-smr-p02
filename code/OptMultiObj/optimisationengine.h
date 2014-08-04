@@ -22,9 +22,11 @@ public:
     int getSizeOfPopulation() ;
     unsigned getLastIterationNumber() ;
 
+
 public Q_SLOTS:
     void iterate( int );
     void setsizeOfPopulation(int) ;
+    void getGlobalNonDominatedFront( ) ;
 
 
 private:

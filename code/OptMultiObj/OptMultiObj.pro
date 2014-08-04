@@ -18,7 +18,8 @@ HEADERS = \
     abstractproblem.h \
     problem_a.h \
     problem_b.h \
-    problem_script.h
+    problem_script.h \
+    optics.h
 
 SOURCES = \
     main.cpp \
@@ -29,5 +30,6 @@ SOURCES = \
     abstractproblem.cpp \
     problem_a.cpp \
     problem_b.cpp \
-    problem_script.cpp
+    problem_script.cpp \
+    optics.cpp
 
