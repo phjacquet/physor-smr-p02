@@ -37,7 +37,7 @@ public Q_SLOTS:
     void removeSelSet() ;
     void exportToPDF() ;
     void exportToTXT() ;
-
+    void DBSCANcomputeButtonReleased(  ) ;
 
 private:
     QWidget *createComputeTab( QWidget *parent );
@@ -63,6 +63,8 @@ private:
     QListWidget * d_IndivSetSelListWidget ;
     QPushButton * d_IndivSetSelUpdateButton ;
     QPushButton * d_IndivSetSelRemoveButton ;
+    QPushButton * d_GlobalParetoComputationButton ;
+    QPushButton * d_DBSCANComputationButton ;
 
 };
 

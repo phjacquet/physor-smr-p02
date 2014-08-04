@@ -81,7 +81,7 @@ std::vector<Individual> OptimisationEngine::nonDominatedFront( std::vector<Indiv
     for (unsigned i=0;i<setOfIndividuals.size();i++) {
         Individual &ri = setOfIndividuals[i] ;
         ri.NonDominationOrder=0 ;
-        for (unsigned j=0;( j<setOfIndividuals.size() ) && (ri.NonDominationOrder==0);j++) {
+        for (unsigned j=0;( j<setOfIndividuals.size() ) && (ri.NonDominationOrder<2);j++) {
             Individual &rj = setOfIndividuals[j] ;
             if (i!=j) {
                 //qDebug()<<i<<" = "<<ri.toString();
@@ -90,7 +90,7 @@ std::vector<Individual> OptimisationEngine::nonDominatedFront( std::vector<Indiv
             }
             //qDebug()<<i<<":"<<ri.NonDominationOrder;
         }
-        if (ri.NonDominationOrder==0) rs.push_back(ri);
+        if (ri.NonDominationOrder<1) rs.push_back(ri);
     }
 
     return rs ;
@@ -202,7 +202,30 @@ void OptimisationEngine::nextIteration(  ) {
     historySetOfIndidual.push_back(rsm);
 }
 
+void OptimisationEngine::getGlobalNonDominatedFront( ) {
+    qDebug()<<"Generation of a global Set";
+    std::map<std::string,std::vector<Individual> > resSetGlobal ;
+    std::vector<Individual>  resGlobal ;
+    std::map<std::string,std::vector<Individual> >::iterator it ;
+    for (int h=0;h<historySetOfIndidual.size();h++) {
+        //qDebug()<<"history "<<h;
+        std::vector<Individual> res=historySetOfIndidual[h]["all"] ;
+        for (int i=0;i<res.size();i++) {
+            resGlobal.push_back(res[i]) ;
+        }
+        /*  for (it=res.begin(); it!=res.end(); ++it)
+            for (int i=0;i<it->second.size();i++)
+                resGlobal[it->first].push_back(it->second[i]) ;    */
+    }
+    resSetGlobal["nonDominatedFront"]=nonDominatedFront(resGlobal);
+    resSetGlobal["nonDominatedDecFront"]=resSetGlobal["nonDominatedFront"] ,
+    resSetGlobal["all"]=resGlobal ;
 
+    for (it=resSetGlobal.begin(); it!=resSetGlobal.end(); ++it) {
+        qDebug()<<"Size of set["<<QString::fromStdString(it->first)<<"] : "<<it->second.size()<<" individuals";
+    }
+    emit(updateCurves(resSetGlobal)) ;
+}
 
 QDataStream & operator << (QDataStream & out, const OptimisationEngine & l) {
     out <<l.sizeOfPopulationIni<<l.sizeOfPopulationTarget;

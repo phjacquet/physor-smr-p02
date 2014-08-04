@@ -16,7 +16,7 @@
 #include <qwt_plot_renderer.h>
 
 #include "optimisationengine.h"
-
+#include "optics.h"
 
 MainWindow::MainWindow()
 {
@@ -57,6 +57,8 @@ MainWindow::MainWindow()
     connect(d_IndivSetSelUpdateButton,SIGNAL(released()),this, SLOT(updateSelSet()) ) ;
     connect(d_IndivSetSelRemoveButton,SIGNAL(released()),this, SLOT(removeSelSet()) ) ;
     connect(d_IndivSetSelListWidget,SIGNAL(clicked(QModelIndex)),this, SLOT(clickSelSet()) ) ;
+    connect(d_GlobalParetoComputationButton,SIGNAL(released()),d_optimisationEngine, SLOT(getGlobalNonDominatedFront()) ) ;
+    connect(d_DBSCANComputationButton,SIGNAL(released()),this,SLOT(DBSCANcomputeButtonReleased())) ;
 
 }
 
@@ -117,7 +119,7 @@ void MainWindow::openButtonReleased(  ) {
     qRegisterMetaTypeStreamOperators<OptimisationEngine>("OptimisationEngine");
     qMetaTypeId<OptimisationEngine>();
 
-    QString fileName = QFileDialog::getOpenFileName(this,"Open File","","Files (*.*)");
+    QString fileName = QFileDialog::getOpenFileName(this,"Open File","..","Files (*.*)");
     qDebug()<<fileName;
 
     QVariant qvar ;
@@ -128,15 +130,17 @@ void MainWindow::openButtonReleased(  ) {
 
     qDebug()<<"d_optimisationEngine->deleteLater():"<<d_optimisationEngine;
     disconnect(d_iterNumberSpinBox,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(iterate(int))) ;
-    disconnect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
+    disconnect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividualFromOptEng(std::map<std::string,std::vector<Individual> >))) ;
     disconnect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
+    disconnect(d_GlobalParetoComputationButton,SIGNAL(released()),d_optimisationEngine, SLOT(getGlobalNonDominatedFront()) ) ;
     d_optimisationEngine->deleteLater();
 
     d_optimisationEngine = new OptimisationEngine(qvar.value<OptimisationEngine>());
     qDebug()<<"d_optimisationEngine = new : "<<d_optimisationEngine;
     connect(d_iterNumberSpinBox,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(iterate(int))) ;
-    connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividual(std::map<std::string,std::vector<Individual> >))) ;
+    connect(d_optimisationEngine,SIGNAL(updateCurves(std::map<std::string,std::vector<Individual> >)),this,SLOT(getSetOfIndividualFromOptEng(std::map<std::string,std::vector<Individual> >))) ;
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
+    connect(d_GlobalParetoComputationButton,SIGNAL(released()),d_optimisationEngine, SLOT(getGlobalNonDominatedFront()) ) ;
 
     d_iterNumberSpinBox->setMaximum(d_optimisationEngine->getLastIterationNumber()-1);
     d_iterNumberSpinBox->setValue(d_optimisationEngine->getLastIterationNumber()-1);
@@ -146,7 +150,7 @@ void MainWindow::saveButtonReleased(  ) {
     qRegisterMetaTypeStreamOperators<OptimisationEngine>("OptimisationEngine");
     qMetaTypeId<OptimisationEngine>();
 
-    QString fileName =  QFileDialog::getSaveFileName(this, "Save File", "", "Files (*.dat)");
+    QString fileName =  QFileDialog::getSaveFileName(this, "Save File", "..", "Files (*.dat)");
     qDebug()<<fileName;
     QVariant qvar = QVariant::fromValue(* d_optimisationEngine);
     QFile file(fileName);
@@ -216,16 +220,23 @@ QWidget *MainWindow::createPlotTab( QWidget *parent )
     d_IndivSetSelListWidget->setCurrentRow(d_IndivSetSelListWidget->count()-1);
     d_IndivSetSelUpdateButton=new QPushButton("update",page);
     d_IndivSetSelRemoveButton=new QPushButton("remove",page);
+    d_GlobalParetoComputationButton = new QPushButton("Compute",page);
+    d_DBSCANComputationButton= new QPushButton("Compute",page);
     layout->addWidget( new QLabel( "Use to plot", page ), 0, 0 );
     layout->addWidget( new QLabel( "Export to pdf", page ), 1, 0 );
     layout->addWidget( new QLabel( "Export to txt", page ), 2, 0 );
     layout->addWidget( new QLabel( "Set Definition", page ), 3, 0 );
+    layout->addWidget( new QLabel( "Global Pareto Front", page ), 4, 0 );
+    layout->addWidget( new QLabel( "DBSCAN clustering analysis", page ), 5, 0 );
     layout->addWidget( d_pdfExportButton, 1, 1 );
     layout->addWidget( d_txtExportButton, 2, 1 );
     layout->addWidget( d_IndivSetSelListWidget, 3, 1 );
-    layout->addWidget( d_IndivSetSelUpdateButton, 3, 2 );
-    layout->addWidget( d_IndivSetSelRemoveButton, 3, 3 );
-    int lastline=4;
+    layout->addLayout(new QVBoxLayout(),3,2);
+    layout->itemAtPosition(3,2)->layout()->addWidget(d_IndivSetSelUpdateButton);
+    layout->itemAtPosition(3,2)->layout()->addWidget(d_IndivSetSelRemoveButton);
+    layout->addWidget( d_GlobalParetoComputationButton, 4, 1 );
+    layout->addWidget( d_DBSCANComputationButton, 5, 1 );
+    int lastline=layout->rowCount();
     layout->addLayout( new QHBoxLayout(), lastline, 0 );
     layout->setColumnStretch( lastline, 10 );
     layout->setRowStretch( lastline, 10 );
@@ -471,4 +482,27 @@ void MainWindow::removeSelSet() {
         currentSetOfIndiduals.erase(currentSetOfIndiduals.find(setName));
 
     d_IndivSetSelListWidget->currentItem()->setForeground(QBrush(Qt::gray));
+}
+
+void MainWindow::DBSCANcomputeButtonReleased() {
+    qDebug()<<"DBSCANcomputeButtonReleased()";
+    std::vector< std::vector<Individual> > clusters ;
+    OPTICS opt;
+    double eps = 0.1 ;
+    int minPts=8;
+    clusters=opt.DBSCAN(currentSetOfIndiduals["nonDominatedFront"],eps,minPts);
+    int indexName =0 ;
+    for (int i=0;i<clusters.size();i++) {
+        qDebug()<<"pack "<<i<<" : "<<clusters[i].size();
+        if (clusters[i].size()>=minPts)   {
+            QString setName=QString("Cluster")+QString::number(indexName);
+            currentSetOfIndiduals[setName.toStdString()]=clusters[i] ;
+            qDebug()<<setName<<" : "<<clusters[i].size();
+            indexName++ ;
+        }
+    }
+    currentSetOfIndiduals.erase(currentSetOfIndiduals.find("nonDominatedFront"));
+    currentSetOfIndiduals.erase(currentSetOfIndiduals.find("nonDominatedDecFront"));
+    currentSetOfIndiduals.erase(currentSetOfIndiduals.find("all"));
+    getSetOfIndividual( currentSetOfIndiduals ) ;
 }

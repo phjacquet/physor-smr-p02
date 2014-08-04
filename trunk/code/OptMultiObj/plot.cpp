@@ -56,17 +56,43 @@ Plot::Plot( QString l_name, QWidget *parent ):
     sortingCurves.push_back("all");
     sortingCurves.push_back("nonDominatedFront");
     sortingCurves.push_back("nonDominatedDecFront");
-    sortingCurves.push_back("sel");
 
-    colors[sortingCurves[0]]=Qt::blue;
-    colors[sortingCurves[1]]=Qt::darkRed;
-    colors[sortingCurves[2]]=Qt::red;
-    colors[sortingCurves[3]]=Qt::white;
+    QColor colorsPalette[]={
+        QColor(0,0,255),
+        QColor(128,0,0),
+        QColor(255,0,0),
+        QColor(255,0,255),
+        QColor(0,255,255),
+        QColor(255,215,0),
+        QColor(0,255,0),
+        QColor(255,255,0),
+        QColor(255,105,180),
+        QColor(255,165,0),
+        QColor(0,0,0),
+        QColor(0,0,0),
+        QColor(0,0,0),
+        QColor(0,0,0),
+        QColor(0,0,0),
+    };
+
+    colors[sortingCurves[0]]=colorsPalette[0];
+    colors[sortingCurves[1]]=colorsPalette[1];
+    colors[sortingCurves[2]]=colorsPalette[2];
 
     legendsName[sortingCurves[0]]="all";
     legendsName[sortingCurves[1]]="nDom";
     legendsName[sortingCurves[2]]="nDomDec";
-    legendsName[sortingCurves[3]]="sel";
+
+    for (int i=0;i<10;i++) {
+        sortingCurves.push_back(QString("Cluster")+QString::number(i));
+        colors[sortingCurves.back()]=colorsPalette[i+3];
+        legendsName[sortingCurves.back()]=QString("C")+QString::number(i);
+    }
+
+    sortingCurves.push_back("sel");
+    colors[sortingCurves.back()]=QColor(Qt::white);
+    legendsName[sortingCurves.back()]="sel";
+
 }
 void Plot::exportToPDF() {
     int symbolSizeScreen=2;
@@ -87,8 +113,7 @@ void Plot::exportToPDF() {
 
 }
 
-void Plot::setCurves( QMap<QString, QPolygonF > & curves )
-{
+void Plot::setCurves( QMap<QString, QPolygonF > & curves ) {
     for (int c=0;c<d_curves.size();c++) {
         d_curves[c]->detach();
         delete d_curves[c] ;
@@ -97,12 +122,16 @@ void Plot::setCurves( QMap<QString, QPolygonF > & curves )
 
     // attach curves
     for (int c=0;c<sortingCurves.size();c++) {
-        d_curves.push_back(new QwtPlotCurve(legendsName[sortingCurves[c]])) ;
-        d_curves.back()->setPen( QColor( colors[sortingCurves[c]] ) );
-        d_curves.back()->attach( this );
-        d_curves.back()->setSymbol(new QwtSymbol( QwtSymbol::Cross,Qt::NoBrush, d_curves.back()->pen(), QSize( 2, 2 ) ) );
-        d_curves.back()->setStyle( QwtPlotCurve::NoCurve );
-        d_curves.back()->setSamples( curves[sortingCurves[c]] );
+        if (curves.find(sortingCurves[c])!=curves.end()) {
+            d_curves.push_back(new QwtPlotCurve(legendsName[sortingCurves[c]])) ;
+            d_curves.back()->setPen( colors[sortingCurves[c]] );
+            d_curves.back()->attach( this );
+            d_curves.back()->setSymbol(new QwtSymbol( QwtSymbol::Cross,Qt::NoBrush, d_curves.back()->pen(), QSize( 2, 2 ) ) );
+            d_curves.back()->setStyle( QwtPlotCurve::NoCurve );
+            d_curves.back()->setSamples( curves[sortingCurves[c]] );
+//qDebug()<<sortingCurves[c]<<" "<<this->name<<" "<<legendsName[sortingCurves[c]];
+//qDebug()<<colors[sortingCurves[c]].red()<<" "<<colors[sortingCurves[c]].green()<<" "<<colors[sortingCurves[c]].blue();
+        }
     }
     replot();
 }
