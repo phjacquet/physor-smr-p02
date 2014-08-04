@@ -50,16 +50,18 @@ TCYCLE=`awk '{print $3}' results` ;
 MCtarget=10.     # 10 t  
 Etarget=8.      # 10 %
 TCYCLEtarget=20. # 20 ans
+PNucltarget=400. # 400 MWth
 
 f1=`echo "($MC-$MCtarget)^2"|bc -l `
 f2=`echo "($E-$Etarget)^2"|bc -l `
 f3=`echo "($TCYCLE/365.-$TCYCLEtarget)^2"|bc -l `
-comment="COMMENT= $ALPHAVAR $HCVAR $PNUCLVAR $f1 $f2 $f3 { $ALPHA $HC $PNUCL }"
+f4=`echo "($PNUCL-$PNucltarget)^2"|bc -l `
+comment="COMMENT= $ALPHAVAR $HCVAR $PNUCLVAR $f1 $f2 $f3 $f4 { $ALPHA $HC $PNUCL }  { `cat results` }"
 
-echo "$f1 ; $f2 ; $f3 ; $comment"
-echo "$ALPHAVAR ; $HCVAR ; $PNUCLVAR ; $f1 ; $f2 ; $f3 ; { $ALPHA $HC $PNUCL } ; { `cat results` } " >> $lpwd/script.out
+echo "$f1 ; $f2 ; $f3 ; $f4 ; $comment"
+echo "$ALPHAVAR ; $HCVAR ; $PNUCLVAR ; $f1 ; $f2 ; $f3 ; $f4 ; { $ALPHA $HC $PNUCL } ; { `cat results` } " >> $lpwd/script.out
 else
 echo "Calcul non converge : {$ALPHAVAR ; $HCVAR ; $PNUCLVAR} => { $ALPHA $HC $PNUCL } => { `cat results` }" >&2
-echo "$ALPHAVAR ; $HCVAR ; $PNUCLVAR ; $f1 ; $f2 ; $f3 ; { $ALPHA $HC $PNUCL } ; { `cat results` } Calcul non converge " >> $lpwd/script.out
+echo "$ALPHAVAR ; $HCVAR ; $PNUCLVAR ; $f1 ; $f2 ; $f3 ; $f4 ; { $ALPHA $HC $PNUCL } ; { `cat results` } Calcul non converge " >> $lpwd/script.out
 fi
 
