@@ -65,7 +65,6 @@ MainWindow::MainWindow()
     connect(d_DBSCAN_MinPtsSpinBox,SIGNAL(valueChanged(QString)),this,SLOT(DBSCANcomputeButtonReleased())) ;
 
     connect(d_CurveDisplayListWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(updateSetOfIndividualDisplay())) ;
-
 }
 
 void MainWindow::exportToPDF() {
@@ -180,15 +179,15 @@ void MainWindow::computeButtonReleased(  ) {
 }
 
 void MainWindow::checkAllCurvesDisplayBoxes() {
+    qDebug()<<"MainWindow::checkAllCurvesDisplayBoxes( )" ;
     for (int i=0;i<d_CurveDisplayListWidget->count();i++)
         d_CurveDisplayListWidget->item(i)->setCheckState(Qt::Checked);
-    updateSetOfIndividualDisplay() ;
 }
 
 void MainWindow::uncheckAllCurvesDisplayBoxes() {
+    qDebug()<<"MainWindow::uncheckAllCurvesDisplayBoxes( )" ;
     for (int i=0;i<d_CurveDisplayListWidget->count();i++)
         d_CurveDisplayListWidget->item(i)->setCheckState(Qt::Unchecked);
-    updateSetOfIndividualDisplay() ;
 }
 
 
@@ -241,6 +240,8 @@ QWidget *MainWindow::createPlotTab( QWidget *parent )
     QPushButton *d_CurveDisplay_uncheckAllButton=new QPushButton("uncheck all",page) ;
     connect(d_CurveDisplay_checkAllButton,SIGNAL(clicked()),this,SLOT(checkAllCurvesDisplayBoxes()));
     connect(d_CurveDisplay_uncheckAllButton,SIGNAL(clicked()),this,SLOT(uncheckAllCurvesDisplayBoxes()));
+    connect(d_CurveDisplay_checkAllButton,SIGNAL(clicked()),this,SLOT(updateSetOfIndividualDisplay()));
+    connect(d_CurveDisplay_uncheckAllButton,SIGNAL(clicked()),this,SLOT(updateSetOfIndividualDisplay()));
 
     d_IndivSetSelListWidget=new QListWidget( page );
     d_IndivSetSelListWidget->addItem("add") ;
@@ -388,6 +389,7 @@ void MainWindow::createPlots() {
 }
 
 void MainWindow::updateSetOfIndividualDisplay() {
+    qDebug()<<"MainWindow::updateSetOfIndividualDisplay( )" ;
     getSetOfIndividual(currentSetOfIndiduals);
 }
 
@@ -465,6 +467,7 @@ void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual
         }
     }
     repaint();
+    qDebug()<<"end of MainWindow::getSetOfIndividual( )" ;
 }
 
 void MainWindow::individualSelection(Plot * plot, QString ordName, QString absName, QRectF rect) {
