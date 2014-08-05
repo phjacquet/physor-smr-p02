@@ -12,7 +12,7 @@ void OptimisationEngine::instantiateProblem() {
     sizeOfPopulationIni=100 ;
     sizeOfPopulationTarget=100;
     problem = new Problem_ShScriptEval("/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/data") ;
-    //problem = new Problem_B() ;
+    problem = new Problem_A() ;
 }
 
 OptimisationEngine::OptimisationEngine() {
@@ -211,12 +211,13 @@ void OptimisationEngine::getGlobalNonDominatedFront( ) {
     for (int h=0;h<historySetOfIndidual.size();h++) {
         //qDebug()<<"history "<<h;
         std::vector<Individual> res=historySetOfIndidual[h]["all"] ;
+        // remove duplicated individuals
         for (int i=0;i<res.size();i++) {
-            resGlobal.push_back(res[i]) ;
+            double minDist= 1. ;
+            for (int j=0;j<resGlobal.size();j++)
+                if (res[i].distanceTo(resGlobal[j])<minDist) minDist = res[i].distanceTo(resGlobal[j]) ;
+            if (minDist>0.0001) resGlobal.push_back(res[i]) ;
         }
-        /*  for (it=res.begin(); it!=res.end(); ++it)
-            for (int i=0;i<it->second.size();i++)
-                resGlobal[it->first].push_back(it->second[i]) ;    */
     }
     resSetGlobal["nonDominatedFront"]=nonDominatedFront(resGlobal);
     resSetGlobal["nonDominatedDecFront"]=resSetGlobal["nonDominatedFront"] ,
