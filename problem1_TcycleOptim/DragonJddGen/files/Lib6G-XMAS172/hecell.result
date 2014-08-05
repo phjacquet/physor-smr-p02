@@ -1,0 +1,353 @@
+ @@@@@@@     @@@@@   @@     @@   @@@@@@   @@@@@   @@     @@
+ @@@@@@@@   @@@@@@@  @@@    @@       @@  @@@@@@@  @@@    @@
+ @@     @@ @@     @@ @@@@   @@       @@ @@     @@ @@@@   @@
+ @@     @@ @@     @@ @@ @@  @@       @@ @@     @@ @@ @@  @@
+ @@     @@ @@     @@ @@  @@ @@       @@ @@     @@ @@  @@ @@
+ @@     @@ @@     @@ @@   @@@@       @@ @@     @@ @@   @@@@
+ @@@@@@@@   @@@@@@@  @@    @@@ @@    @@  @@@@@@@  @@    @@@
+ @@@@@@@     @@@@@   @@     @@  @@@@@@    @@@@@   @@     @@
+
+           VERSION DONJON 4  Version 4.0.6 ($Revision: 1666 $)                   $Date: 2012-12-10 10:12:13 -0500 (Mon, 10 Dec 2012) $           
+           GROUPE D'ANALYSE NUCLEAIRE
+           ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF DONJON:
+ --------------------------------------------
+ Copyright (C) 2007 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+* CLE-2000 VERS 2.1 * R.ROY, EPM COPYRIGHT 1999 *                           LINE
+LINKED_LIST                                                                 0001
+  LIBIFUEL                                                                  0002
+  LIBMIX                                                                    0003
+  GCELL                                                                     0004
+  TRACK SYS FLUX                                                            0005
+  EDNOC EDC                                                                 0006
+  DATABASE DBNOC DBC                                                        0007
+  ;                                                                         0008
+                                                                            0009
+SEQ_ASCII                                                                   0010
+  HEDB.db                                                                   0011
+  ;                                                                         0012
+                                                                            0013
+MODULE                                                                      0014
+  GEO: LIB:                                                                 0015
+  SHI: USS:                                                                 0016
+  SYBILT: SNT: ASM: FLU: EDI:                                               0017
+  DELETE: END:                                                              0018
+  PSP: UTL: COMPO: EVO: NCR:                                                0019
+  ;                                                                         0020
+                                                                            0021
+SEQ_BINARY                                                                  0022
+  ;                                                                         0023
+                                                                            0024
+LIBMIX := LIB: :: EDIT 0                                                    0025
+     NMIX 1                                                                 0026
+     CTRA WIMS                                                              0027
+     ANIS 2                                                                 0028
+*     DEPL LIB: DRAGON FIL: DLIB_J3XMAS                                     0029
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS                                      0030
+                                                                            0031
+* Helium Coolant                                                            0032
+  MIX 1 1000.0                                                              0033
+     O16 = 'O16'      6.0E-13                                               0034
+     U238 = 'U238'    2.5E-13  1                                            0035
+     Pu239 = 'Pu239'  5.0E-14  1                                            0036
+                                                                            0037
+     He3    = 'He3'     3.3947E-10                                          0038
+     He4    = 'He4'     2.4779E-04                                          0039
+                                                                            0040
+;                                                                           0041
+                                                                            0042
+GCELL := GEO: ::  HOMOGE                                                    0043
+     MIX 1                                                                  0044
+;                                                                           0045
+                                                                            0046
+TRACK := SYBILT: GCELL ::                                                   0047
+  TITLE 'GRMCELL' ;                                                         0048
+                                                                            0049
+SYS := ASM: LIBMIX TRACK  ;                                                 0050
+                                                                            0051
+FLUX := FLU: SYS LIBMIX TRACK  ::                                           0052
+     TYPE N                                                                 0053
+     EXTE 100 1E-5 THER 5 1E-4 ;                                            0054
+                                                                            0055
+EDC := EDI: LIBMIX TRACK FLUX ::                                            0056
+  EDIT 0                                                                    0057
+  MERG MIX 1                                                                0058
+  COND 7.4080E06                                                            0059
+          3.3550E03                                                         0060
+          6.1440E01                                                         0061
+          2.3800E00                                                         0062
+          1.2000E-01                                                        0063
+          1.0000E-02                                                        0064
+  MICR ALL                                                                  0065
+  SAVE ON 'HEC' ;                                                           0066
+                                                                            0067
+DATABASE := COMPO: ::                                                       0068
+     STEP UP 'Helium'                                                       0069
+     COMM  'generic' ENDC                                                   0070
+     PARA 'Temp' VALU REAL                                                  0071
+     INIT                                                                   0072
+     ;                                                                      0073
+                                                                            0074
+DBC   := DATABASE ;                                                         0075
+                                                                            0076
+DBC := COMPO: DBC EDC :: EDIT 5                                             0077
+     STEP UP 'Helium'                                                       0078
+     Temp 1000.                                                             0079
+     ;                                                                      0080
+                                                                            0081
+HEDB.db := DBC ;                                                            0082
+                                                                            0083
+                                                                            0084
+END: ;                                                                      0085
+QUIT .                                                                  IMPLICIT
+
+->@BEGIN MODULE : LIB:        
+->@DESCRIPTION  : Microscopic xs-library processing                                       
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : LIB:        
+-->>TIME SPENT IN MODULE LIB:        :      0.000
+
+ @END MODULE -> LIB:        
+
+-->>TIME SPENT IN MODULE LIB:        :      0.000
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GCELL       ' WITH TYPE HOMOGENEOUS     .
+->@END MODULE   : GEO:        
+-->>TIME SPENT IN MODULE GEO:        :      0.000
+
+ @END MODULE -> GEO:        
+
+-->>TIME SPENT IN MODULE GEO:        :      0.000
+->@BEGIN MODULE : SYBILT:     
+->@DESCRIPTION  : Sybil 2-D tracking                                                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ STATE VECTOR:
+ NREG       1   (NUMBER OF REGIONS)
+ NUN        1   (NUMBER OF FLUX UNKNOWNS)
+ ILK        1   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX      1   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF      0   (NUMBER OF OUTER SURFACES)
+ ITG        1   (TYPE OF GEOMETRY)
+ MAXZ   10000   (TRACKING LENGTH)
+ MAXJ      18   (INTERNAL STORAGE LENGTH FOR CURRENTS)
+ NUNCUR     0   (NUMBER OF ADDITIONAL INTERFACE CURRENT COMPONENTS)
+ IBIHET     0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+->@END MODULE   : SYBILT:     
+-->>TIME SPENT IN MODULE SYBILT:     :      0.000
+
+ @END MODULE -> SYBILT:     
+
+-->>TIME SPENT IN MODULE SYBILT:     :      0.000
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON COMPLETE CP BY DOOR =   SYBIL       
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ      1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM      1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS      1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE     2   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM      1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM      4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP     172   (NUMBER OF GROUPS)
+ NUN        1   (NUMBER OF UNKNOWNS)
+ NBMIX      1   (NUMBER OF MIXTURES)
+ NANI       1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF      0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ DOOR           (SYBIL       )
+->@END MODULE   : ASM:        
+-->>TIME SPENT IN MODULE ASM:        :      0.000
+
+ @END MODULE -> ASM:        
+
+-->>TIME SPENT IN MODULE ASM:        :      0.000
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =          
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ FLUX SOLUTION DOOR          =    TRAFIC
+ NB. OF GROUPS               =       172
+ NB. OF REGIONS              =         1
+ NB. OF UNKNOWNS PER GROUP   =         1
+ MAX. OUTER ITERATIONS       =       100
+ MAX. THERMAL ITERATIONS     =         5
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = ON 
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  1.000E-04
+ UNKNOWN INNER TOLERANCE     =  1.000E-04
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS
+->@END MODULE   : FLU:        
+-->>TIME SPENT IN MODULE FLU:        :      0.000
+
+ @END MODULE -> FLU:        
+
+-->>TIME SPENT IN MODULE FLU:        :      0.000
+->@BEGIN MODULE : EDI:        
+->@DESCRIPTION  : Editing module                                                          
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : EDI:        
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+
+ @END MODULE -> EDI:        
+
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+->@BEGIN MODULE : COMPO:      
+->@DESCRIPTION  : Create multiparameter reactor composition database                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ COMPO: CREATE A DIRECTORY NAMED 'Helium      ' TO STORE THE COMPO STRUCTURE.
+
+ COMPO: STATE-VECTOR VALUES (Helium      )
+ --------------------------
+ IMPX        1  (0=NO PRINT/1=SHORT)
+ NMIL        0  (NB. OF MIXTURES IN COMPO)
+ NG          0  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       0  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        1  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+->@END MODULE   : COMPO:      
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+
+ @END MODULE -> COMPO:      
+
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : EQU:        
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+
+ @END MODULE -> EQU:        
+
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+->@BEGIN MODULE : COMPO:      
+->@DESCRIPTION  : Create multiparameter reactor composition database                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ COMPO: ACCESS A DIRECTORY NAMED 'Helium      ' TO STORE THE COMPO STRUCTURE.
+
+ ************************************************************
+ * COMPO: ELEMENTARY CALCULATION NB.    1    (Helium      ) *
+ ************************************************************
+ COMPO: SET GLOBAL PARAMETER 'Temp        ' =  1.0000E+03
+ COMCAL: THE FLUX IS NOT NORMALIZED.
+ COMMIC: PROCESSING HOMOGENIZED MIXTURE   1 CONTAINING    5 ISOTOPES.
+
+ COMGEP: MIXTURE=     1
+ COMGEP: MUPLET =     1
+
+
+
+ COMPO: STATE-VECTOR VALUES (Helium      )
+ --------------------------
+ IMPX        5  (0=NO PRINT/1=SHORT)
+ NMIL        1  (NB. OF MIXTURES IN COMPO)
+ NG          7  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       1  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        1  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY 'Helium      ' OF THE TABLE    'DBC         ':
+
+ BLOCK NAME----------    LENGTH    TYPE
+
+    1  'COMMENT     '        20    CHARACTER       
+    2  'GLOBAL      '        -1    DIRECTORY       
+    3  'STATE-VECTOR'        40    INTEGER         
+    4  'MIXTURES    '         1    LIST            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY 'Helium      ' =        60
+
+->@END MODULE   : COMPO:      
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+
+ @END MODULE -> COMPO:      
+
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'DBC         ' WAS EXPORTED TO FILE 'HEDB.db     '.
+->@END MODULE   : EQU:        
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+
+ @END MODULE -> EQU:        
+
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+
+
+ @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
+ @CHECK FOR WARNINGS IN LISTING
+ @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL

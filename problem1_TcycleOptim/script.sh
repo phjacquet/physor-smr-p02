@@ -51,17 +51,22 @@ MCtarget=10.     # 10 t
 Etarget=8.      # 10 %
 TCYCLEtarget=20. # 20 ans
 PNucltarget=400. # 400 MWth
+BUtarget=200. # 200 GWth.d/t
+
+BUreached=`echo "($TCYCLE*$PNUCL/$MC/1000.)"|bc -l `
 
 f1=`echo "($MC-$MCtarget)^2"|bc -l `
 f2=`echo "($E-$Etarget)^2"|bc -l `
-f3=`echo "($TCYCLE/365.-$TCYCLEtarget)^2"|bc -l `
-f4=`echo "($PNUCL-$PNucltarget)^2"|bc -l `
-comment="COMMENT= $ALPHAVAR $HCVAR $PNUCLVAR $f1 $f2 $f3 $f4 { $ALPHA $HC $PNUCL }  { `cat results` }"
+#f3=`echo "($TCYCLE/365.-$TCYCLEtarget)^2"|bc -l `
+#f4=`echo "($PNUCL-$PNucltarget)^2"|bc -l `
+f3=`echo "($BUtarget-$BUreached)^2"|bc -l `
 
-echo "$f1 ; $f2 ; $f3 ; $f4 ; $comment"
-echo "$ALPHAVAR ; $HCVAR ; $PNUCLVAR ; $f1 ; $f2 ; $f3 ; $f4 ; { $ALPHA $HC $PNUCL } ; { `cat results` } " >> $lpwd/script.out
+comment="$ALPHAVAR $HCVAR $PNUCLVAR $f1 $f2 $f3 { $ALPHA $HC $PNUCL }  { `cat results`	$BUreached }"
+
+echo "$f1 ; $f2 ; $f3 ; COMMENT= $comment"
+echo "$comment" >> $lpwd/script.out
 else
-echo "Calcul non converge : {$ALPHAVAR ; $HCVAR ; $PNUCLVAR} => { $ALPHA $HC $PNUCL } => { `cat results` }" >&2
-echo "$ALPHAVAR ; $HCVAR ; $PNUCLVAR ; $f1 ; $f2 ; $f3 ; $f4 ; { $ALPHA $HC $PNUCL } ; { `cat results` } Calcul non converge " >> $lpwd/script.out
+echo "Calcul non converge : $comment" >&2
+echo "Calcul non converge : $comment" >> $lpwd/script.out
 fi
 

@@ -53,6 +53,7 @@ int OptimisationEngine::getSizeOfPopulation() {
 
 void OptimisationEngine::setsizeOfPopulation(int size)  {
     sizeOfPopulationTarget=size;
+    sizeOfPopulationIni=size;
 }
 
 void OptimisationEngine::iterate( int itNumber_l ) {
