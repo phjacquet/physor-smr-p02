@@ -14,6 +14,8 @@ class QSpinBox ;
 class OptimisationEngine ;
 class QCheckBox ;
 class QListWidget ;
+class QDoubleSpinBox ;
+class QListWidgetItem ;
 
 class MainWindow: public QMainWindow
 {
@@ -23,10 +25,15 @@ public:
     MainWindow();
     OptimisationEngine * d_optimisationEngine ;
 
+
 public Q_SLOTS:
+    void updateSetOfIndividualDisplay();
     void getSetOfIndividualFromOptEng( std::map<std::string,std::vector<Individual> > );
     void getSetOfIndividual( std::map<std::string,std::vector<Individual> > );
     void iterButtonReleased(  );
+    void checkAllCurvesDisplayBoxes();
+    void uncheckAllCurvesDisplayBoxes();
+
     void openButtonReleased(  );
     void saveButtonReleased(  );
     void computeButtonReleased(  ) ;
@@ -44,6 +51,8 @@ private:
     QWidget *createPlotTab( QWidget *parent );
     QWidget *createFileTab( QWidget *parent ) ;
     void createPlots() ;
+    void DBSCANcompute(  ) ;
+
 
     QMap<QString,Plot *> paramPlots;
     QMap<QString,Plot *> objPlots;
@@ -65,6 +74,11 @@ private:
     QPushButton * d_IndivSetSelRemoveButton ;
     QPushButton * d_GlobalParetoComputationButton ;
     QPushButton * d_DBSCANComputationButton ;
+    QSpinBox    * d_DBSCAN_MinPtsSpinBox ;
+    QDoubleSpinBox * d_DBSCAN_EpsSpinBox ;
+    QCheckBox * d_DBSCAN_AutoComputeCheckBox ;
+    QListWidget * d_CurveDisplayListWidget ;
+    QMap<QString,QListWidgetItem*> d_CurveDisplayListWidgetItems ;
 
 };
 

@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QVariant>
@@ -45,11 +46,11 @@ MainWindow::MainWindow()
     connect(d_NumberOfIndividuals,SIGNAL(valueChanged(int)),d_optimisationEngine, SLOT(setsizeOfPopulation(int)) ) ;
     connect(d_pdfExportButton,SIGNAL(released()),this, SLOT(exportToPDF()) ) ;
     connect(d_txtExportButton,SIGNAL(released()),this, SLOT(exportToTXT()) ) ;
-    for (unsigned i = 0; i < paramPlots.size(); i++) {
+    for (int i = 0; i < paramPlots.size(); i++) {
         connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
         connect(paramPlots[paramPlots.keys().at(i)],SIGNAL(defineUnselection(Plot*,QString,QString,QRectF)),this, SLOT(individualUnselection(Plot*,QString,QString,QRectF)) ) ;
     }
-    for (unsigned i = 0; i < objPlots.size(); i++) {
+    for (int i = 0; i < objPlots.size(); i++) {
         connect(objPlots[objPlots.keys().at(i)],SIGNAL(defineSelection(Plot*,QString,QString,QRectF)),this, SLOT(individualSelection(Plot*,QString,QString,QRectF)) ) ;
         connect(objPlots[objPlots.keys().at(i)],SIGNAL(defineUnselection(Plot*,QString,QString,QRectF)),this, SLOT(individualUnselection(Plot*,QString,QString,QRectF)) ) ;
     }
@@ -58,7 +59,12 @@ MainWindow::MainWindow()
     connect(d_IndivSetSelRemoveButton,SIGNAL(released()),this, SLOT(removeSelSet()) ) ;
     connect(d_IndivSetSelListWidget,SIGNAL(clicked(QModelIndex)),this, SLOT(clickSelSet()) ) ;
     connect(d_GlobalParetoComputationButton,SIGNAL(released()),d_optimisationEngine, SLOT(getGlobalNonDominatedFront()) ) ;
+
     connect(d_DBSCANComputationButton,SIGNAL(released()),this,SLOT(DBSCANcomputeButtonReleased())) ;
+    connect(d_DBSCAN_EpsSpinBox,SIGNAL(valueChanged(QString)),this,SLOT(DBSCANcomputeButtonReleased())) ;
+    connect(d_DBSCAN_MinPtsSpinBox,SIGNAL(valueChanged(QString)),this,SLOT(DBSCANcomputeButtonReleased())) ;
+
+    connect(d_CurveDisplayListWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(updateSetOfIndividualDisplay())) ;
 
 }
 
@@ -75,7 +81,7 @@ void MainWindow::exportToPDF() {
         qDebug()<<"failed to open "<<fileName<<" is it writable?";
         return ;
     }
-    for (unsigned i = 0; i < paramPlots.size(); i++) {
+    for (int i = 0; i < paramPlots.size(); i++) {
         QString key=paramPlots.keys().at(i);
         paramPlots[key]->exportToPDF();
         renderer.render(paramPlots[key],&painter,QRectF(300,0,700,700));
@@ -85,7 +91,7 @@ void MainWindow::exportToPDF() {
             return ;
         }
     }
-    for (unsigned i = 0; i < objPlots.size(); i++) {
+    for (int i = 0; i < objPlots.size(); i++) {
         QString key=objPlots.keys().at(i);
         objPlots[key]->exportToPDF();
         renderer.render(objPlots[key],&painter,QRectF(300,0,700,700));
@@ -173,6 +179,19 @@ void MainWindow::computeButtonReleased(  ) {
     }
 }
 
+void MainWindow::checkAllCurvesDisplayBoxes() {
+    for (int i=0;i<d_CurveDisplayListWidget->count();i++)
+        d_CurveDisplayListWidget->item(i)->setCheckState(Qt::Checked);
+    updateSetOfIndividualDisplay() ;
+}
+
+void MainWindow::uncheckAllCurvesDisplayBoxes() {
+    for (int i=0;i<d_CurveDisplayListWidget->count();i++)
+        d_CurveDisplayListWidget->item(i)->setCheckState(Qt::Unchecked);
+    updateSetOfIndividualDisplay() ;
+}
+
+
 QWidget *MainWindow::createComputeTab( QWidget *parent )
 {
     QWidget *page = new QWidget( parent );
@@ -211,10 +230,18 @@ QWidget *MainWindow::createPlotTab( QWidget *parent )
 {
     QWidget *page = new QWidget( parent );
     QGridLayout *layout = new QGridLayout( page );
-    d_pdfExportButton=new QPushButton("export",page);
-    d_pdfExportButton->setChecked(false);
-    d_txtExportButton=new QPushButton("export",page);
-    d_txtExportButton->setChecked(false);
+    int lastline=layout->rowCount();
+
+    d_CurveDisplayListWidget=new QListWidget( page );
+    d_CurveDisplayListWidget->addItem(d_CurveDisplayListWidgetItems["all"]=new QListWidgetItem("all")) ;
+    d_CurveDisplayListWidget->addItem(d_CurveDisplayListWidgetItems["nonDominatedFront"]=new QListWidgetItem("nonDominatedFront")) ;
+    d_CurveDisplayListWidget->addItem(d_CurveDisplayListWidgetItems["nonDominatedDecFront"]=new QListWidgetItem("nonDominatedDecFront")) ;
+    checkAllCurvesDisplayBoxes();
+    QPushButton *d_CurveDisplay_checkAllButton=new QPushButton("check all",page) ;
+    QPushButton *d_CurveDisplay_uncheckAllButton=new QPushButton("uncheck all",page) ;
+    connect(d_CurveDisplay_checkAllButton,SIGNAL(clicked()),this,SLOT(checkAllCurvesDisplayBoxes()));
+    connect(d_CurveDisplay_uncheckAllButton,SIGNAL(clicked()),this,SLOT(uncheckAllCurvesDisplayBoxes()));
+
     d_IndivSetSelListWidget=new QListWidget( page );
     d_IndivSetSelListWidget->addItem("add") ;
     d_IndivSetSelListWidget->setCurrentRow(d_IndivSetSelListWidget->count()-1);
@@ -222,21 +249,51 @@ QWidget *MainWindow::createPlotTab( QWidget *parent )
     d_IndivSetSelRemoveButton=new QPushButton("remove",page);
     d_GlobalParetoComputationButton = new QPushButton("Compute",page);
     d_DBSCANComputationButton= new QPushButton("Compute",page);
-    layout->addWidget( new QLabel( "Use to plot", page ), 0, 0 );
-    layout->addWidget( new QLabel( "Export to pdf", page ), 1, 0 );
-    layout->addWidget( new QLabel( "Export to txt", page ), 2, 0 );
-    layout->addWidget( new QLabel( "Set Definition", page ), 3, 0 );
-    layout->addWidget( new QLabel( "Global Pareto Front", page ), 4, 0 );
-    layout->addWidget( new QLabel( "DBSCAN clustering analysis", page ), 5, 0 );
-    layout->addWidget( d_pdfExportButton, 1, 1 );
-    layout->addWidget( d_txtExportButton, 2, 1 );
-    layout->addWidget( d_IndivSetSelListWidget, 3, 1 );
-    layout->addLayout(new QVBoxLayout(),3,2);
-    layout->itemAtPosition(3,2)->layout()->addWidget(d_IndivSetSelUpdateButton);
-    layout->itemAtPosition(3,2)->layout()->addWidget(d_IndivSetSelRemoveButton);
-    layout->addWidget( d_GlobalParetoComputationButton, 4, 1 );
-    layout->addWidget( d_DBSCANComputationButton, 5, 1 );
-    int lastline=layout->rowCount();
+    d_DBSCAN_MinPtsSpinBox=new QSpinBox(page) ;
+    d_DBSCAN_EpsSpinBox=new QDoubleSpinBox(page);
+    d_DBSCAN_MinPtsSpinBox->setValue(10);
+    d_DBSCAN_MinPtsSpinBox->setMinimum(0);
+    d_DBSCAN_EpsSpinBox->setValue(0.1);
+    d_DBSCAN_EpsSpinBox->setMinimum(0.);
+    d_DBSCAN_EpsSpinBox->setDecimals(3);
+    d_DBSCAN_EpsSpinBox->setSingleStep(0.01);
+    d_DBSCAN_AutoComputeCheckBox=new QCheckBox(page);
+
+    layout->addWidget( new QLabel( "Use to plot", page ), lastline, 0 );
+    lastline=layout->rowCount();
+
+    layout->addLayout(new QVBoxLayout(),lastline,0);
+    layout->addLayout(new QVBoxLayout(),lastline,1);
+    layout->itemAtPosition(lastline,0)->layout()->addWidget(new QLabel(  "Curves display", page )) ;
+    layout->itemAtPosition(lastline,0)->layout()->addWidget( d_CurveDisplayListWidget );
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_CurveDisplay_checkAllButton);
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_CurveDisplay_uncheckAllButton);
+    lastline=layout->rowCount();
+
+    layout->addLayout(new QVBoxLayout(),lastline,0);
+    layout->addLayout(new QVBoxLayout(),lastline,1);
+    layout->itemAtPosition(lastline,0)->layout()->addWidget(new QLabel(  "Set Definition", page )) ;
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_IndivSetSelUpdateButton);
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_IndivSetSelRemoveButton);
+    layout->itemAtPosition(lastline,0)->layout()->addWidget( d_IndivSetSelListWidget );
+    lastline=layout->rowCount();
+
+    layout->addWidget( new QLabel( "Global Pareto Front", page ), lastline, 0 );
+    layout->addWidget( d_GlobalParetoComputationButton, lastline, 1 );
+    lastline=layout->rowCount();
+
+    layout->addLayout(new QVBoxLayout(),lastline,0);
+    layout->addLayout(new QVBoxLayout(),lastline,1);
+    layout->itemAtPosition(lastline,0)->layout()->addWidget(new QLabel( "DBSCAN clustering analysis", page ));
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_DBSCANComputationButton);
+    layout->itemAtPosition(lastline,0)->layout()->addWidget(new QLabel( "_Min. Pts.", page ));
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_DBSCAN_MinPtsSpinBox);
+    layout->itemAtPosition(lastline,0)->layout()->addWidget(new QLabel( "_epsilon", page ));
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_DBSCAN_EpsSpinBox);
+    layout->itemAtPosition(lastline,0)->layout()->addWidget(new QLabel( "_AutoCompute", page ));
+    layout->itemAtPosition(lastline,1)->layout()->addWidget(d_DBSCAN_AutoComputeCheckBox);
+    lastline=layout->rowCount();
+
     layout->addLayout( new QHBoxLayout(), lastline, 0 );
     layout->setColumnStretch( lastline, 10 );
     layout->setRowStretch( lastline, 10 );
@@ -247,14 +304,33 @@ QWidget *MainWindow::createFileTab( QWidget *parent )
 {
     QWidget *page = new QWidget( parent );
     QGridLayout *layout = new QGridLayout( page );
+    d_pdfExportButton=new QPushButton("export",page);
+    d_pdfExportButton->setChecked(false);
+    d_txtExportButton=new QPushButton("export",page);
+    d_txtExportButton->setChecked(false);
     d_openButton= new QPushButton("Open", page );
     d_saveButton= new QPushButton("Save", page );
-    layout->addWidget( new QLabel( "Open existing results", page ), 0, 0 );
-    layout->addWidget(d_openButton , 1, 0 );
-    layout->addWidget(d_saveButton , 1, 1 );
-    layout->addLayout( new QHBoxLayout(), 2, 0 );
-    layout->setColumnStretch( 2, 10 );
-    layout->setRowStretch( 2, 10 );
+    int lastline=layout->rowCount();
+
+    layout->addWidget( new QLabel( "Export to pdf", page ), lastline, 0 );
+    layout->addWidget( d_pdfExportButton, lastline, 1 );
+    lastline=layout->rowCount();
+
+    layout->addWidget( new QLabel( "Export to txt", page ), lastline, 0 );
+    layout->addWidget( d_txtExportButton, lastline, 1 );
+    lastline=layout->rowCount();
+
+    layout->addWidget( new QLabel( "Open existing results", page ), lastline, 0 );
+    layout->addWidget(d_openButton , lastline, 1 );
+    lastline=layout->rowCount();
+
+    layout->addWidget( new QLabel( "Save current results", page ), lastline, 0 );
+    layout->addWidget(d_saveButton , lastline, 1 );
+    lastline=layout->rowCount();
+
+    layout->addLayout( new QHBoxLayout(), lastline, 0 );
+    layout->setColumnStretch( lastline, 10 );
+    layout->setRowStretch( lastline, 10 );
     return page;
 }
 
@@ -311,8 +387,14 @@ void MainWindow::createPlots() {
     qDebug()<<"ok";
 }
 
+void MainWindow::updateSetOfIndividualDisplay() {
+    getSetOfIndividual(currentSetOfIndiduals);
+}
+
 void MainWindow::getSetOfIndividualFromOptEng( std::map<std::string,std::vector<Individual> > setOfIndiduals_l ) {
     qDebug()<<"MainWindow::getSetOfIndividualFromOptEng( )" ;
+    if (!d_DBSCAN_AutoComputeCheckBox->isChecked()) checkAllCurvesDisplayBoxes();
+
     qRegisterMetaTypeStreamOperators<OptimisationEngine>("OptimisationEngine");
     qMetaTypeId<OptimisationEngine>();
     QString fileName="./res.bak";
@@ -328,6 +410,7 @@ void MainWindow::getSetOfIndividualFromOptEng( std::map<std::string,std::vector<
 void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual> > setOfIndiduals_l ) {
     qDebug()<<"MainWindow::getSetOfIndividual( )" ;
     currentSetOfIndiduals=setOfIndiduals_l ;
+    if (d_DBSCAN_AutoComputeCheckBox->isChecked()) emit(DBSCANcompute());
 
     for (unsigned l = 0; l < d_optimisationEngine->getNumberOfParameters()-1; l++) {
         for (unsigned c = l+1; c < d_optimisationEngine->getNumberOfParameters(); c++) {
@@ -337,16 +420,21 @@ void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual
 //            qDebug()<<key;
 
             QMap<QString, QPolygonF > pcurves ;
-            for (std::map<std::string,std::vector<Individual> >::iterator it=setOfIndiduals_l.begin(); it!=setOfIndiduals_l.end(); ++it) {
-//                qDebug()<<QString::fromStdString(it->first.c_str()) <<" "<< it->second.size();
-                QPolygonF samples;
-                for ( unsigned i = 0; i < it->second.size() ; i++ )
-                {
-                    const double Xl =  it->second[i].parameters[l] ;
-                    const double Xc =  it->second[i].parameters[c] ;
-                    samples += QPointF( Xc, Xl );
+            for (std::map<std::string,std::vector<Individual> >::iterator it=currentSetOfIndiduals.begin(); it!=currentSetOfIndiduals.end(); ++it) {
+//              qDebug()<<QString::fromStdString(it->first.c_str()) <<" "<< it->second.size();
+                bool hide =false ;
+                if (d_CurveDisplayListWidgetItems[QString::fromStdString(it->first)] != 0 )
+                    if (d_CurveDisplayListWidgetItems[QString::fromStdString(it->first)]->checkState()==Qt::Unchecked)
+                        hide =true ;
+                if (hide==false) {
+                    QPolygonF samples;
+                    for ( unsigned i = 0; i < it->second.size() ; i++ )  {
+                        const double Xl =  it->second[i].parameters[l] ;
+                        const double Xc =  it->second[i].parameters[c] ;
+                        samples += QPointF( Xc, Xl );
+                    }
+                    pcurves[QString::fromStdString ( it->first)]=samples;
                 }
-                pcurves[QString::fromStdString ( it->first)]=samples;
             }
             paramPlots[key]->setCurves( pcurves );
         }
@@ -358,15 +446,20 @@ void MainWindow::getSetOfIndividual( std::map<std::string,std::vector<Individual
             QString abs="F"+QString::number(c);
             QString key=ord+"_"+abs;
             QMap<QString, QPolygonF > ocurves;
-            for (std::map<std::string,std::vector<Individual> >::iterator it=setOfIndiduals_l.begin(); it!=setOfIndiduals_l.end(); ++it) {
-                QPolygonF samples;
-                for ( unsigned i = 0; i < it->second.size() ; i++ )
-                {
-                    const double Fl = it->second[i].objectives[l] ;
-                    const double Fc = it->second[i].objectives[c] ;
-                    samples += QPointF( Fc, Fl );
+            for (std::map<std::string,std::vector<Individual> >::iterator it=currentSetOfIndiduals.begin(); it!=currentSetOfIndiduals.end(); ++it) {
+                bool hide =false ;
+                if (d_CurveDisplayListWidgetItems[QString::fromStdString(it->first)] != 0 )
+                    if (d_CurveDisplayListWidgetItems[QString::fromStdString(it->first)]->checkState()==Qt::Unchecked)
+                        hide =true ;
+                if (hide==false) {
+                    QPolygonF samples;
+                    for ( unsigned i = 0; i < it->second.size() ; i++ ) {
+                        const double Fl = it->second[i].objectives[l] ;
+                        const double Fc = it->second[i].objectives[c] ;
+                        samples += QPointF( Fc, Fl );
+                    }
+                    ocurves[QString::fromStdString ( it->first)]=samples;
                 }
-                ocurves[QString::fromStdString ( it->first)]=samples;
             }
             objPlots[key]->setCurves(ocurves );
         }
@@ -486,23 +579,33 @@ void MainWindow::removeSelSet() {
 
 void MainWindow::DBSCANcomputeButtonReleased() {
     qDebug()<<"DBSCANcomputeButtonReleased()";
+    DBSCANcompute() ;
+    uncheckAllCurvesDisplayBoxes();
+    getSetOfIndividual( currentSetOfIndiduals ) ;
+}
+
+void MainWindow::DBSCANcompute() {
+    qDebug()<<"DBSCANcompute()";
     std::vector< std::vector<Individual> > clusters ;
     OPTICS opt;
-    double eps = 0.1 ;
-    int minPts=8;
+    double eps = d_DBSCAN_EpsSpinBox->value() ;
+    unsigned minPts = d_DBSCAN_MinPtsSpinBox->value() ;
+
     clusters=opt.DBSCAN(currentSetOfIndiduals["nonDominatedFront"],eps,minPts);
-    int indexName =0 ;
-    for (int i=0;i<clusters.size();i++) {
+    int index =0 ;
+    int indexMax =5 ;
+    for (unsigned i=0;i < indexMax;i++) {
+        QString setName=QString("Cluster")+QString::number(i);
+        if (currentSetOfIndiduals.find(setName.toStdString())!=currentSetOfIndiduals.end())
+            currentSetOfIndiduals.erase(setName.toStdString()) ;
+    }
+    for (unsigned i=0;i<clusters.size() && index < indexMax;i++) {
         qDebug()<<"pack "<<i<<" : "<<clusters[i].size();
         if (clusters[i].size()>=minPts)   {
-            QString setName=QString("Cluster")+QString::number(indexName);
+            QString setName=QString("Cluster")+QString::number(index);
             currentSetOfIndiduals[setName.toStdString()]=clusters[i] ;
             qDebug()<<setName<<" : "<<clusters[i].size();
-            indexName++ ;
+            index++ ;
         }
     }
-    currentSetOfIndiduals.erase(currentSetOfIndiduals.find("nonDominatedFront"));
-    currentSetOfIndiduals.erase(currentSetOfIndiduals.find("nonDominatedDecFront"));
-    currentSetOfIndiduals.erase(currentSetOfIndiduals.find("all"));
-    getSetOfIndividual( currentSetOfIndiduals ) ;
 }
