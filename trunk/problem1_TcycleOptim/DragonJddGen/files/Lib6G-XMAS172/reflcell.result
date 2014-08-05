@@ -1,0 +1,389 @@
+ @@@@@@@     @@@@@   @@     @@   @@@@@@   @@@@@   @@     @@
+ @@@@@@@@   @@@@@@@  @@@    @@       @@  @@@@@@@  @@@    @@
+ @@     @@ @@     @@ @@@@   @@       @@ @@     @@ @@@@   @@
+ @@     @@ @@     @@ @@ @@  @@       @@ @@     @@ @@ @@  @@
+ @@     @@ @@     @@ @@  @@ @@       @@ @@     @@ @@  @@ @@
+ @@     @@ @@     @@ @@   @@@@       @@ @@     @@ @@   @@@@
+ @@@@@@@@   @@@@@@@  @@    @@@ @@    @@  @@@@@@@  @@    @@@
+ @@@@@@@     @@@@@   @@     @@  @@@@@@    @@@@@   @@     @@
+
+           VERSION DONJON 4  Version 4.0.6 ($Revision: 1666 $)                   $Date: 2012-12-10 10:12:13 -0500 (Mon, 10 Dec 2012) $           
+           GROUPE D'ANALYSE NUCLEAIRE
+           ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF DONJON:
+ --------------------------------------------
+ Copyright (C) 2007 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+* CLE-2000 VERS 2.1 * R.ROY, EPM COPYRIGHT 1999 *                           LINE
+LINKED_LIST                                                                 0001
+  LIBIFUEL                                                                  0002
+  LIBMIX                                                                    0003
+  GCELL                                                                     0004
+  TRACK SYS FLUX                                                            0005
+  EDC                                                                       0006
+  DATABASE DBC                                                              0007
+                                                                            0008
+  ;                                                                         0009
+                                                                            0010
+SEQ_ASCII                                                                   0011
+  REFL.db                                                                   0012
+  ;                                                                         0013
+                                                                            0014
+MODULE                                                                      0015
+  GEO: LIB:                                                                 0016
+  SHI: USS:                                                                 0017
+  SYBILT: SNT: ASM: FLU: EDI:                                               0018
+  DELETE: END:                                                              0019
+  PSP: UTL: COMPO: EVO: NCR:                                                0020
+  ;                                                                         0021
+                                                                            0022
+SEQ_BINARY                                                                  0023
+  ;                                                                         0024
+                                                                            0025
+LIBMIX := LIB: :: EDIT 0                                                    0026
+     NMIX 1                                                                 0027
+     CTRA WIMS                                                              0028
+     ANIS 2                                                                 0029
+*     DEPL LIB: DRAGON FIL: DLIB_J3XMAS                                     0030
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS                                      0031
+                                                                            0032
+* Reflecteur Mobile - ACIER ODS plein                                       0033
+  MIX 1 1000.0                                                              0034
+     O16 = 'O16'      6.0E-13                                               0035
+     U238 = 'U238'    2.5E-13  1                                            0036
+     Pu239 = 'Pu239'  5.0E-14  1                                            0037
+                                                                            0038
+     C0   = 'C0'    2.3817E-05                                              0039
+     Mn55 = 'Mn55'  7.1451E-05                                              0040
+     P31  = 'P31'   5.5573E-06                                              0041
+     S32  = 'S32'   4.7634E-06                                              0042
+     Si28 = 'Si28'  3.1756E-05                                              0043
+     Ni58 = 'Ni58'  1.0321E-04                                              0044
+     Cr52 = 'Cr52'  1.0876E-02                                              0045
+     Mo95 = 'Mo95'  2.3817E-04                                              0046
+     Ti48 = 'Ti48'  7.7802E-04                                              0047
+     Al27 = 'Al27'  2.3817E-05                                              0048
+     B10  = 'B10'   7.1451E-07                                              0049
+     N14  = 'N14'   3.4932E-05                                              0050
+     O16  = 'O16'   1.6672E-04                                              0051
+     Y89  = 'Y89'   2.2229E-04                                              0052
+     Fe56 = 'Fe56'  6.6808E-02                                              0053
+                                                                            0054
+;                                                                           0055
+                                                                            0056
+                                                                            0057
+GCELL := GEO: ::  HOMOGE                                                    0058
+     MIX 1                                                                  0059
+;                                                                           0060
+                                                                            0061
+TRACK := SYBILT: GCELL ::                                                   0062
+  TITLE 'GRMCELL' ;                                                         0063
+                                                                            0064
+SYS := ASM: LIBMIX TRACK  ;                                                 0065
+                                                                            0066
+FLUX := FLU: SYS LIBMIX TRACK  ::                                           0067
+     TYPE K                                                                 0068
+     EXTE 100 1E-5 THER 5 1E-4 ;                                            0069
+                                                                            0070
+EDC := EDI: LIBMIX TRACK FLUX ::                                            0071
+  EDIT 0                                                                    0072
+  MERG MIX 1                                                                0073
+  COND 7.4080E06                                                            0074
+          3.3550E03                                                         0075
+          6.1440E01                                                         0076
+          2.3800E00                                                         0077
+          1.2000E-01                                                        0078
+          1.0000E-02                                                        0079
+  MICR ALL                                                                  0080
+  SAVE ON 'RMNC' ;                                                          0081
+                                                                            0082
+DATABASE := COMPO: ::                                                       0083
+     STEP UP 'BOL Refl'                                                     0084
+     COMM  'generic' ENDC                                                   0085
+     PARA 'Temp' VALU REAL                                                  0086
+     INIT                                                                   0087
+     ;                                                                      0088
+                                                                            0089
+DBC   := DATABASE ;                                                         0090
+                                                                            0091
+DBC := COMPO: DBC EDC :: EDIT 5                                             0092
+     STEP UP 'BOL Refl'                                                     0093
+     Temp 1000.                                                             0094
+     ;                                                                      0095
+                                                                            0096
+REFL.db   := DBC ;                                                          0097
+                                                                            0098
+END: ;                                                                      0099
+QUIT .                                                                  IMPLICIT
+
+->@BEGIN MODULE : LIB:        
+->@DESCRIPTION  : Microscopic xs-library processing                                       
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : LIB:        
+-->>TIME SPENT IN MODULE LIB:        :      1.000
+
+ @END MODULE -> LIB:        
+
+-->>TIME SPENT IN MODULE LIB:        :      1.000
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GCELL       ' WITH TYPE HOMOGENEOUS     .
+->@END MODULE   : GEO:        
+-->>TIME SPENT IN MODULE GEO:        :      0.000
+
+ @END MODULE -> GEO:        
+
+-->>TIME SPENT IN MODULE GEO:        :      0.000
+->@BEGIN MODULE : SYBILT:     
+->@DESCRIPTION  : Sybil 2-D tracking                                                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ STATE VECTOR:
+ NREG       1   (NUMBER OF REGIONS)
+ NUN        1   (NUMBER OF FLUX UNKNOWNS)
+ ILK        1   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX      1   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF      0   (NUMBER OF OUTER SURFACES)
+ ITG        1   (TYPE OF GEOMETRY)
+ MAXZ   10000   (TRACKING LENGTH)
+ MAXJ      18   (INTERNAL STORAGE LENGTH FOR CURRENTS)
+ NUNCUR     0   (NUMBER OF ADDITIONAL INTERFACE CURRENT COMPONENTS)
+ IBIHET     0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+->@END MODULE   : SYBILT:     
+-->>TIME SPENT IN MODULE SYBILT:     :      0.000
+
+ @END MODULE -> SYBILT:     
+
+-->>TIME SPENT IN MODULE SYBILT:     :      0.000
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON COMPLETE CP BY DOOR =   SYBIL       
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ      1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM      1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS      1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE     2   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM      1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM      4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP     172   (NUMBER OF GROUPS)
+ NUN        1   (NUMBER OF UNKNOWNS)
+ NBMIX      1   (NUMBER OF MIXTURES)
+ NANI       1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF      0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ DOOR           (SYBIL       )
+->@END MODULE   : ASM:        
+-->>TIME SPENT IN MODULE ASM:        :      0.000
+
+ @END MODULE -> ASM:        
+
+-->>TIME SPENT IN MODULE ASM:        :      0.000
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =     K-INF
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ FLUX SOLUTION DOOR          =    TRAFIC
+ NB. OF GROUPS               =       172
+ NB. OF REGIONS              =         1
+ NB. OF UNKNOWNS PER GROUP   =         1
+ MAX. OUTER ITERATIONS       =       100
+ MAX. THERMAL ITERATIONS     =         5
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = ON 
+ EIGENVALUE TOLERANCE        =  1.000E-05
+ UNKNOWN OUTER TOLERANCE     =  1.000E-04
+ UNKNOWN INNER TOLERANCE     =  1.000E-04
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-05 KEFF= 8.388768E-10 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 8.74E+04 TAR= 1.00E-04 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 1.06E-06 TAR= 1.00E-04 IGDEB=          173 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  1) EIG: PRC= 9.89E-01 TAR= 1.00E-05 KEFF= 4.216583E-10 BUCK= 0.00000E+00
+ OUT(  1) FLX:                             FNOR= 2.371588E+09 ACCE=     1.00000
+          IN(  1) FLX: PRC= 3.64E-03 TAR= 1.00E-04 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 4.09E-07 TAR= 1.00E-04 IGDEB=          173 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+ OUT(  2) EIG: PRC= 9.39E-06 TAR= 1.00E-05 KEFF= 4.216544E-10 BUCK= 0.00000E+00
+ OUT(  2) FLX: PRC= 3.64E-03 TAR= 1.00E-04 FNOR= 2.371611E+09 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.10E-06 TAR= 1.00E-04 IGDEB=          173 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+ OUT(  3) EIG: PRC= 2.93E-09 TAR= 1.00E-05 KEFF= 4.216544E-10 BUCK= 0.00000E+00
+ OUT(  3) FLX: PRC= 2.10E-06 TAR= 1.00E-04 FNOR= 2.371611E+09 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     3 ITERATIONS.
+
+ ++ TRACKING CALLED=   5 TIMES FINAL KINF=4.216544E-10 FINAL KEFF=4.216544E-10 B2= 0.00000E+00 PRECISION= 2.93E-09
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       860
+->@END MODULE   : FLU:        
+-->>TIME SPENT IN MODULE FLU:        :      0.000
+
+ @END MODULE -> FLU:        
+
+-->>TIME SPENT IN MODULE FLU:        :      0.000
+->@BEGIN MODULE : EDI:        
+->@DESCRIPTION  : Editing module                                                          
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : EDI:        
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+
+ @END MODULE -> EDI:        
+
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+->@BEGIN MODULE : COMPO:      
+->@DESCRIPTION  : Create multiparameter reactor composition database                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ COMPO: CREATE A DIRECTORY NAMED 'BOL Refl    ' TO STORE THE COMPO STRUCTURE.
+
+ COMPO: STATE-VECTOR VALUES (BOL Refl    )
+ --------------------------
+ IMPX        1  (0=NO PRINT/1=SHORT)
+ NMIL        0  (NB. OF MIXTURES IN COMPO)
+ NG          0  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       0  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        1  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+->@END MODULE   : COMPO:      
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+
+ @END MODULE -> COMPO:      
+
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : EQU:        
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+
+ @END MODULE -> EQU:        
+
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+->@BEGIN MODULE : COMPO:      
+->@DESCRIPTION  : Create multiparameter reactor composition database                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ COMPO: ACCESS A DIRECTORY NAMED 'BOL Refl    ' TO STORE THE COMPO STRUCTURE.
+
+ ************************************************************
+ * COMPO: ELEMENTARY CALCULATION NB.    1    (BOL Refl    ) *
+ ************************************************************
+ COMPO: SET GLOBAL PARAMETER 'Temp        ' =  1.0000E+03
+ COMCAL: THE FLUX IS NOT NORMALIZED.
+ COMMIC: PROCESSING HOMOGENIZED MIXTURE   1 CONTAINING   17 ISOTOPES.
+
+ COMGEP: MIXTURE=     1
+ COMGEP: MUPLET =     1
+
+
+
+ COMPO: STATE-VECTOR VALUES (BOL Refl    )
+ --------------------------
+ IMPX        5  (0=NO PRINT/1=SHORT)
+ NMIL        1  (NB. OF MIXTURES IN COMPO)
+ NG          7  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       1  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        1  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY 'BOL Refl    ' OF THE TABLE    'DBC         ':
+
+ BLOCK NAME----------    LENGTH    TYPE
+
+    1  'COMMENT     '        20    CHARACTER       
+    2  'GLOBAL      '        -1    DIRECTORY       
+    3  'STATE-VECTOR'        40    INTEGER         
+    4  'MIXTURES    '         1    LIST            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY 'BOL Refl    ' =        60
+
+->@END MODULE   : COMPO:      
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+
+ @END MODULE -> COMPO:      
+
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'DBC         ' WAS EXPORTED TO FILE 'REFL.db     '.
+->@END MODULE   : EQU:        
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+
+ @END MODULE -> EQU:        
+
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+
+
+ @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
+ @CHECK FOR WARNINGS IN LISTING
+ @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL

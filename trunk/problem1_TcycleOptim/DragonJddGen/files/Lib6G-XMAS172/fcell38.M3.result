@@ -1,0 +1,559 @@
+ @@@@@@@     @@@@@   @@     @@   @@@@@@   @@@@@   @@     @@
+ @@@@@@@@   @@@@@@@  @@@    @@       @@  @@@@@@@  @@@    @@
+ @@     @@ @@     @@ @@@@   @@       @@ @@     @@ @@@@   @@
+ @@     @@ @@     @@ @@ @@  @@       @@ @@     @@ @@ @@  @@
+ @@     @@ @@     @@ @@  @@ @@       @@ @@     @@ @@  @@ @@
+ @@     @@ @@     @@ @@   @@@@       @@ @@     @@ @@   @@@@
+ @@@@@@@@   @@@@@@@  @@    @@@ @@    @@  @@@@@@@  @@    @@@
+ @@@@@@@     @@@@@   @@     @@  @@@@@@    @@@@@   @@     @@
+
+           VERSION DONJON 4  Version 4.0.6 ($Revision: 1666 $)                   $Date: 2012-12-10 10:12:13 -0500 (Mon, 10 Dec 2012) $           
+           GROUPE D'ANALYSE NUCLEAIRE
+           ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF DONJON:
+ --------------------------------------------
+ Copyright (C) 2007 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+* CLE-2000 VERS 2.1 * R.ROY, EPM COPYRIGHT 1999 *                           LINE
+LINKED_LIST                                                                 0001
+  LIBMIX   LIBMIXS                                                          0002
+  GCELL                                                                     0003
+  TRACK SYS FLUX                                                            0004
+  EDC                                                                       0005
+  DATABASE DBC                                                              0006
+  ;                                                                         0007
+                                                                            0008
+SEQ_ASCII                                                                   0009
+  FC38.M3.db ;                                                              0010
+                                                                            0011
+SEQ_BINARY                                                                  0012
+     TRACK_FIL ;                                                            0013
+                                                                            0014
+MODULE                                                                      0015
+  GEO: LIB:                                                                 0016
+  SHI: USS:                                                                 0017
+  SYBILT: EXCELT: ASM: FLU: EDI:                                            0018
+  DELETE: END:                                                              0019
+  PSP: UTL: COMPO: EVO:                                                     0020
+  ;                                                                         0021
+                                                                            0022
+SEQ_BINARY                                                                  0023
+  ;                                                                         0024
+                                                                            0025
+LIBMIX := LIB: :: EDIT 0                                                    0026
+     NMIX 2                                                                 0027
+     CTRA WIMS                                                              0028
+*     SUBG                                                                  0029
+     ANIS 2                                                                 0030
+     DEPL LIB: DRAGON FIL: DLIB_J3XMAS                                      0031
+     MIXS LIB: DRAGON FIL: DLIB_J3XMAS                                      0032
+                                                                            0033
+* Rod+He                                                                    0034
+  MIX 1 1000.0                                                              0035
+                                                                            0036
+C0 = 'C0' 2.7106E-02                                                        0037
+Si28 = 'Si28' 7.2039E-04                                                    0038
+Si29 = 'Si29' 3.6559E-05                                                    0039
+Si30 = 'Si30' 2.4139E-05                                                    0040
+                                                                            0041
+O16 = 'O16' 1.9274E-02                                                      0042
+O17 = 'O17' 7.3243E-06                                                      0043
+                                                                            0044
+U238 = 'U238'    5.977420E-03  1                                            0045
+Pu238 = 'Pu238'  3.663580E-06  1                                            0046
+Pu239 = 'Pu239'  2.930864E-03  1                                            0047
+Pu240 = 'Pu240'  6.191450E-04  1                                            0048
+Pu241 = 'Pu241'  9.891666E-05  1                                            0049
+Pu242 = 'Pu242'  1.099074E-05  1                                            0050
+Am241 = 'Am241'  0.000000E+00  1                                            0051
+                                                                            0052
+Mn55 = 'Mn55' 5.7348E-06                                                    0053
+P31 = 'P31' 4.4604E-07                                                      0054
+S32 = 'S32' 3.8232E-07                                                      0055
+Si28 = 'Si28' 2.5488E-06                                                    0056
+Ni58 = 'Ni58' 8.2838E-06                                                    0057
+Cr52 = 'Cr52' 8.7292E-04                                                    0058
+Mo95 = 'Mo95' 1.9116E-05                                                    0059
+Ti48 = 'Ti48' 6.2445E-05                                                    0060
+Al27 = 'Al27' 1.9116E-06                                                    0061
+N14 = 'N14' 2.8037E-06                                                      0062
+Y89 = 'Y89' 1.7841E-05                                                      0063
+Fe56 = 'Fe56' 5.3621E-03                                                    0064
+                                                                            0065
+* mix for depl. bug                                                         0066
+  MIX 2 1000.0                                                              0067
+  He4 =  'He4'    1.0E-05                                                   0068
+                                                                            0069
+;                                                                           0070
+                                                                            0071
+GCELL := GEO: ::  HOMOGE                                                    0072
+     MIX 1                                                                  0073
+ ;                                                                          0074
+                                                                            0075
+TRACK := SYBILT: GCELL ::                                                   0076
+  TITLE 'Fuel'                                                              0077
+  EDIT 1 MAXR 30 ;                                                          0078
+                                                                            0079
+*LIBMIXS := USS: LIBMIX TRACK :: EDIT 1  ;                                  0080
+LIBMIXS := SHI: LIBMIX TRACK :: EDIT 1 NOLJ ;                               0081
+                                                                            0082
+                                                                            0083
+SYS := ASM: LIBMIXS TRACK ;                                                 0084
+                                                                            0085
+FLUX := FLU: SYS LIBMIXS TRACK  ::                                          0086
+     TYPE B B1 PNL                                                          0087
+     EXTE 100 1E-4 THER 5 1E-4 ;                                            0088
+                                                                            0089
+EDC := EDI: LIBMIXS TRACK FLUX ::                                           0090
+  EDIT 0                                                                    0091
+  MERG COMP                                                                 0092
+  COND  7.4080E06                                                           0093
+          3.3550E03                                                         0094
+          6.1440E01                                                         0095
+          2.3800E00                                                         0096
+          1.2000E-01                                                        0097
+          1.0000E-02                                                        0098
+  MICR ALL                                                                  0099
+  SAVE ON 'FCCg' ;                                                          0100
+                                                                            0101
+DATABASE := COMPO: ::                                                       0102
+     STEP UP 'BOL InFuel'                                                   0103
+     COMM  'generic' ENDC                                                   0104
+     PARA 'TempFuel' VALU REAL                                              0105
+     PARA 'TempSleeve' VALU REAL                                            0106
+     INIT                                                                   0107
+     STEP UP 'BOL ExFuel'                                                   0108
+     COMM  'generic' ENDC                                                   0109
+     PARA 'TempFuel' VALU REAL                                              0110
+     PARA 'TempSleeve' VALU REAL                                            0111
+     INIT                                                                   0112
+;                                                                           0113
+DBC   := DATABASE ;                                                         0114
+                                                                            0115
+DBC := COMPO: DBC EDC :: EDIT 5                                             0116
+     STEP UP 'BOL InFuel'                                                   0117
+     TempFuel 1000.0                                                        0118
+     TempSleeve 1000.0                                                      0119
+     ;                                                                      0120
+DBC := COMPO: DBC EDC :: EDIT 5                                             0121
+     STEP UP 'BOL ExFuel'                                                   0122
+     TempFuel 1000.0                                                        0123
+     TempSleeve 1000.0                                                      0124
+     ;                                                                      0125
+                                                                            0126
+FC38.M3.db   := DBC ;                                                       0127
+                                                                            0128
+END: ;                                                                      0129
+QUIT .                                                                  IMPLICIT
+
+->@BEGIN MODULE : LIB:        
+->@DESCRIPTION  : Microscopic xs-library processing                                       
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : LIB:        
+-->>TIME SPENT IN MODULE LIB:        :      2.000
+
+ @END MODULE -> LIB:        
+
+-->>TIME SPENT IN MODULE LIB:        :      2.000
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GCELL       ' WITH TYPE HOMOGENEOUS     .
+->@END MODULE   : GEO:        
+-->>TIME SPENT IN MODULE GEO:        :      0.000
+
+ @END MODULE -> GEO:        
+
+-->>TIME SPENT IN MODULE GEO:        :      0.000
+->@BEGIN MODULE : SYBILT:     
+->@DESCRIPTION  : Sybil 2-D tracking                                                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ STATE VECTOR:
+ NREG       1   (NUMBER OF REGIONS)
+ NUN        1   (NUMBER OF FLUX UNKNOWNS)
+ ILK        1   (0=LEAKAGE PRESENT/1=LEAKAGE ABSENT)
+ NBMIX      1   (MAXIMUM NUMBER OF MIXTURES USED)
+ NSURF      0   (NUMBER OF OUTER SURFACES)
+ ITG        1   (TYPE OF GEOMETRY)
+ MAXZ   10000   (TRACKING LENGTH)
+ MAXJ     120   (INTERNAL STORAGE LENGTH FOR CURRENTS)
+ NUNCUR     0   (NUMBER OF ADDITIONAL INTERFACE CURRENT COMPONENTS)
+ IBIHET     0   (0/1=DOUBLE HETEROGENEITY IS NOT/IS ACTIVE)
+->@END MODULE   : SYBILT:     
+-->>TIME SPENT IN MODULE SYBILT:     :      0.000
+
+ @END MODULE -> SYBILT:     
+
+-->>TIME SPENT IN MODULE SYBILT:     :      0.000
+->@BEGIN MODULE : SHI:        
+->@DESCRIPTION  : Self-shielding by improved Stammler method                              
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ SHIBA MULTIDIMENSIONAL SELF-SHIELDING CALCULATION -> A. HEBERT
+ Fuel                                                                    
+ COLLISION PROBABILITY MODULE: SYBIL       
+
+ STAMM'LER APPROXIMATION.
+
+
+ OPTIONS
+ -------
+ IGRMIN      33   (FIRST GROUP TO PROCESS)
+ IGRMAX      95   (MOST THERMAL GROUP TO PROCESS)
+ MAXX0       20   (MAXIMUM NUMBER OF ITERATIONS)
+ IBIEFF       0   (=1: USE LIVOLANT-JEANPIERRE NORMALIZATION)
+ IGC          1   (=1: USE GOLDSTEIN-COHEN APPROXIMATION)
+ ITRANZ       2   (TYPE OF TRANSPORT CORRECTION)
+ LEVEL        0   (=0: STAMM'LER; =1: STAMM'LER/NORDHEIM; =2: RIEMANN/NORDHEIM)
+ IPHASE       2   (=1: NATIVE ASSEMBLY; =2: USE PIJ)
+ EPS    1.0E-04   (STOPING CRITERION)
+
+ WIMS TYPE TRANSPORT CORRECTION (ITRAN=   2 ).
+
+
+ CONVERGENCE REACHED AT SHIBA ITERATION =   7  ERROR =  9.091E-05
+
+->@END MODULE   : SHI:        
+-->>TIME SPENT IN MODULE SHI:        :      3.000
+
+ @END MODULE -> SHI:        
+
+-->>TIME SPENT IN MODULE SHI:        :      3.000
+->@BEGIN MODULE : ASM:        
+->@DESCRIPTION  : To built system matrices (CP and IC)                                    
+->@CREDITS      : A. Hebert, G. Marleau, R. Roy                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ COMPUTATION OF DRAGON COMPLETE CP BY DOOR =   SYBIL       
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS (ITRANC=   2 )
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ ITPIJ      1   (1=WIJ/2=PIJ/3=WIJK/4=PIJK)
+ LNORM      1   (0=NORMALIZE PIJ TO 1/1=DO NOT)
+ LALBS      1   (0=RECOVER AND SAVE WIS/1=DO NOT)
+ IPHASE     2   (1=GENERAL FLUX SOLUTION/2=PIJ APPROACH)
+ ISTRM      1   (1=HOMO BN OR NO LEAKAGE/2=ECCO/3=TIBERE)
+ KNORM      4   (0=NO/1=GELBARD/2=DIAGONAL/3=NON-LINEAR/4=HELIOS)
+ NGRP     172   (NUMBER OF GROUPS)
+ NUN        1   (NUMBER OF UNKNOWNS)
+ NBMIX      2   (NUMBER OF MIXTURES)
+ NANI       1   (NUMBER OF LEGENDRE ORDERS SCATTERING XS)
+ IDIFF      0   (0/1: DIFFUSION COEFFICIENTS ABSENT/PRESENT)
+ DOOR           (SYBIL       )
+->@END MODULE   : ASM:        
+-->>TIME SPENT IN MODULE ASM:        :      0.000
+
+ @END MODULE -> ASM:        
+
+-->>TIME SPENT IN MODULE ASM:        :      0.000
+->@BEGIN MODULE : FLU:        
+->@DESCRIPTION  : Solve the flux equations                                                
+->@CREDITS      : R. Roy, A. Hebert, G. Marleau                                           
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+
+
+ P. I. M.    SOLUTION TO TRANSPORT EQUATION
+
+ CALCULATION TYPE            =  BUCKLING
+ FORWARD/BACKWARD OPTION     =    DIRECT
+ (AN)ISOTROPY OPTION         = ISOTROPIC
+ LEAKAGE TYPE                =      B1  
+ LEAKAGE OPTION              =       PNL
+ BUCKLING                    =  G SEARCH
+ INITIAL TOTAL BUCKLING      =  0.00000E+00
+ FLUX SOLUTION DOOR          =    TRAFIC
+ NB. OF GROUPS               =       172
+ NB. OF REGIONS              =         1
+ NB. OF UNKNOWNS PER GROUP   =         1
+ MAX. OUTER ITERATIONS       =       100
+ MAX. THERMAL ITERATIONS     =         5
+ ACCELERATION SCHEME         =( 3 FREE, 3 ACCELERATED)
+ REBALANCING OPTION          = ON 
+ SELF-SCATTERING REDUCTION   = ON 
+ FUNDAMENTAL MODE            = ON 
+ EIGENVALUE TOLERANCE        =  1.000E-04
+ UNKNOWN OUTER TOLERANCE     =  1.000E-04
+ UNKNOWN INNER TOLERANCE     =  1.000E-04
+
+
+ USE TRANSPORT CORRECTED CROSS-SECTIONS
+ OUT(  0) EIG: PRC= 1.00E+00 TAR= 1.00E-04 KEFF= 7.311966E-01 BUCK= 0.00000E+00
+          IN(  1) FLX: PRC= 1.45E+08 TAR= 1.00E-04 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 4.35E-07 TAR= 1.00E-04 IGDEB=          173 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ B1DIF: SOLUTION OF B1   EQUATIONS WITH TYPE B   
+        NUMBER OF ITERATIONS =  6
+        BUCKLING =  6.84971E-03
+        K-EFFECTIVE =  1.000000  (  1.000000 )
+        K-INFINITE =  2.089693
+        MIGRATION AREA =  1.59086E+02
+
+ OUT(  1) EIG: PRC= 2.69E-01 TAR= 1.00E-04 KEFF= 9.999999E-01 BUCK= 6.84971E-03
+ OUT(  1) FLX:                             FNOR= 1.000000E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 1.04E-02 TAR= 1.00E-04 IGDEB=            1 ACCE=     1.00000
+          IN(  2) FLX: PRC= 4.50E-07 TAR= 1.00E-04 IGDEB=          173 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     2 ITERATIONS.
+
+ B1DIF: SOLUTION OF B1   EQUATIONS WITH TYPE B   
+        NUMBER OF ITERATIONS =  2
+        BUCKLING =  6.84863E-03
+        K-EFFECTIVE =  0.999999  (  1.000000 )
+        K-INFINITE =  2.089235
+        MIGRATION AREA =  1.59044E+02
+
+ OUT(  2) EIG: PRC= 8.22E-07 TAR= 1.00E-04 KEFF= 9.999991E-01 BUCK= 6.84863E-03
+ OUT(  2) FLX: PRC= 1.03E-02 TAR= 1.00E-04 FNOR= 1.000001E+00 ACCE=     1.00000
+          IN(  1) FLX: PRC= 2.28E-06 TAR= 1.00E-04 IGDEB=          173 ACCE=     1.00000
+ FLU2DR: NO LEAKAGE-> REBALANCING ON
+ FLU2DR: CPU TIME=        0. INTERNAL CONVERGENCE       REACHED AFTER     1 ITERATIONS.
+
+ B1DIF: SOLUTION OF B1   EQUATIONS WITH TYPE B   
+        NUMBER OF ITERATIONS =  2
+        BUCKLING =  6.84863E-03
+        K-EFFECTIVE =  1.000000  (  1.000000 )
+        K-INFINITE =  2.089235
+        MIGRATION AREA =  1.59044E+02
+
+ OUT(  3) EIG: PRC= 8.91E-07 TAR= 1.00E-04 KEFF= 1.000000E+00 BUCK= 6.84863E-03
+ OUT(  3) FLX: PRC= 1.60E-06 TAR= 1.00E-04 FNOR= 1.000000E+00 ACCE=     1.00000
+ FLU2DR: CPU TIME=        0. EXTERNAL CONVERGENCE       REACHED AFTER     3 ITERATIONS.
+
+ ++ TRACKING CALLED=   5 TIMES FINAL KINF=2.089235E+00 FINAL KEFF=1.000000E+00 B2= 6.84863E-03 PRECISION= 8.91E-07
+ ++ TOTAL NUMBER OF FLUX CALCULATIONS=       860
+->@END MODULE   : FLU:        
+-->>TIME SPENT IN MODULE FLU:        :      0.000
+
+ @END MODULE -> FLU:        
+
+-->>TIME SPENT IN MODULE FLU:        :      0.000
+->@BEGIN MODULE : EDI:        
+->@DESCRIPTION  : Editing module                                                          
+->@CREDITS      : A. Hebert, G. Marleau                                                   
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : EDI:        
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+
+ @END MODULE -> EDI:        
+
+-->>TIME SPENT IN MODULE EDI:        :      0.000
+->@BEGIN MODULE : COMPO:      
+->@DESCRIPTION  : Create multiparameter reactor composition database                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ COMPO: CREATE A DIRECTORY NAMED 'BOL InFuel  ' TO STORE THE COMPO STRUCTURE.
+
+ COMPO: STATE-VECTOR VALUES (BOL InFuel  )
+ --------------------------
+ IMPX        1  (0=NO PRINT/1=SHORT)
+ NMIL        0  (NB. OF MIXTURES IN COMPO)
+ NG          0  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       0  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        2  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+
+ COMPO: CREATE A DIRECTORY NAMED 'BOL ExFuel  ' TO STORE THE COMPO STRUCTURE.
+
+ COMPO: STATE-VECTOR VALUES (BOL ExFuel  )
+ --------------------------
+ IMPX        1  (0=NO PRINT/1=SHORT)
+ NMIL        0  (NB. OF MIXTURES IN COMPO)
+ NG          0  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       0  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        2  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+->@END MODULE   : COMPO:      
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+
+ @END MODULE -> COMPO:      
+
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+->@END MODULE   : EQU:        
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+
+ @END MODULE -> EQU:        
+
+-->>TIME SPENT IN MODULE EQU:        :      0.000
+->@BEGIN MODULE : COMPO:      
+->@DESCRIPTION  : Create multiparameter reactor composition database                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ COMPO: ACCESS A DIRECTORY NAMED 'BOL InFuel  ' TO STORE THE COMPO STRUCTURE.
+
+ ************************************************************
+ * COMPO: ELEMENTARY CALCULATION NB.    1    (BOL InFuel  ) *
+ ************************************************************
+ COMPO: SET GLOBAL PARAMETER 'TempFuel    ' =  1.0000E+03
+ COMPO: SET GLOBAL PARAMETER 'TempSleeve  ' =  1.0000E+03
+ COMCAL: THE FLUX IS NOT NORMALIZED.
+ COMMIC: PROCESSING HOMOGENIZED MIXTURE   1 CONTAINING  301 ISOTOPES.
+
+ COMGEP: MIXTURE=     1
+ COMGEP: MUPLET =     1     1
+
+
+
+ COMPO: STATE-VECTOR VALUES (BOL InFuel  )
+ --------------------------
+ IMPX        5  (0=NO PRINT/1=SHORT)
+ NMIL        1  (NB. OF MIXTURES IN COMPO)
+ NG          7  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       1  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        2  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY 'BOL InFuel  ' OF THE TABLE    'DBC         ':
+
+ BLOCK NAME----------    LENGTH    TYPE
+
+    1  'COMMENT     '        20    CHARACTER       
+    2  'GLOBAL      '        -1    DIRECTORY       
+    3  'STATE-VECTOR'        40    INTEGER         
+    4  'MIXTURES    '         1    LIST            
+    5  'DEPL-CHAIN  '        -1    DIRECTORY       
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY 'BOL InFuel  ' =        60
+
+->@END MODULE   : COMPO:      
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+
+ @END MODULE -> COMPO:      
+
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+->@BEGIN MODULE : COMPO:      
+->@DESCRIPTION  : Create multiparameter reactor composition database                      
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ COMPO: ACCESS A DIRECTORY NAMED 'BOL ExFuel  ' TO STORE THE COMPO STRUCTURE.
+
+ ************************************************************
+ * COMPO: ELEMENTARY CALCULATION NB.    1    (BOL ExFuel  ) *
+ ************************************************************
+ COMPO: SET GLOBAL PARAMETER 'TempFuel    ' =  1.0000E+03
+ COMPO: SET GLOBAL PARAMETER 'TempSleeve  ' =  1.0000E+03
+ COMCAL: THE FLUX IS NOT NORMALIZED.
+ COMMIC: PROCESSING HOMOGENIZED MIXTURE   1 CONTAINING  301 ISOTOPES.
+
+ COMGEP: MIXTURE=     1
+ COMGEP: MUPLET =     1     1
+
+
+
+ COMPO: STATE-VECTOR VALUES (BOL ExFuel  )
+ --------------------------
+ IMPX        5  (0=NO PRINT/1=SHORT)
+ NMIL        1  (NB. OF MIXTURES IN COMPO)
+ NG          7  (NB. OF ENERGY GROUPS IN COMPO)
+ NCALS       1  (NB. OF ELEMENTARY CALCULATIONS)
+ MAXCAL     10  (MAXIMUM NB. OF ELEMENTARY CALCULATIONS)
+ NPAR        2  (NB. OF GLOBAL PARAMETERS)
+ NLOC        0  (NB. OF LOCAL PARAMETERS)
+ NPCHR       0  (NB. OF GLOBAL PARAMETERS LINKED TO ISOTOPES)
+ NPPNT       0  (NB. OF GLOBAL PARAMETERS LINKED TO LIBRARIES)
+ NPCHRL      0  (NB. OF LOCAL PARAMETERS LINKED TO ISOTOPES)
+ NCOMLI      1  (NB. OF LINES OF COMMENT)
+ LGEOM       0  (0/1: GEOMETRIES ABSENT/PRESENT)
+ LSPEC    2006  (COMPO SPECIFICATION IDENTIFIER)
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY 'BOL ExFuel  ' OF THE TABLE    'DBC         ':
+
+ BLOCK NAME----------    LENGTH    TYPE
+
+    1  'COMMENT     '        20    CHARACTER       
+    2  'GLOBAL      '        -1    DIRECTORY       
+    3  'STATE-VECTOR'        40    INTEGER         
+    4  'MIXTURES    '         1    LIST            
+    5  'DEPL-CHAIN  '        -1    DIRECTORY       
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY 'BOL ExFuel  ' =        60
+
+->@END MODULE   : COMPO:      
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+
+ @END MODULE -> COMPO:      
+
+-->>TIME SPENT IN MODULE COMPO:      :      0.000
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'DBC         ' WAS EXPORTED TO FILE 'FC38.M3.db  '.
+->@END MODULE   : EQU:        
+-->>TIME SPENT IN MODULE EQU:        :      1.000
+
+ @END MODULE -> EQU:        
+
+-->>TIME SPENT IN MODULE EQU:        :      1.000
+
+
+ @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
+ @CHECK FOR WARNINGS IN LISTING
+ @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL

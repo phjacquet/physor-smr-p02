@@ -3,39 +3,25 @@ Generateur de jeu de donnees pour Dragon - test
 Version X.X
 _________________________________________
 Recherche d enrichissement tel que keff (t=0) = 1.10000
-4.26user 0.02system 0:04.31elapsed 99%CPU (0avgtext+0avgdata 111984maxresident)k
-0inputs+448outputs (0major+7283minor)pagefaults 0swaps
-mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
-mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
-mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
-mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
-mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
-3.57user 0.02system 0:03.62elapsed 99%CPU (0avgtext+0avgdata 111984maxresident)k
-0inputs+448outputs (0major+7284minor)pagefaults 0swaps
-mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
-mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
-mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
-mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
-mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
-3.51user 0.04system 0:03.57elapsed 99%CPU (0avgtext+0avgdata 111968maxresident)k
-0inputs+448outputs (0major+7283minor)pagefaults 0swaps
+3.59user 0.06system 0:03.77elapsed 96%CPU (0avgtext+0avgdata 112016maxresident)k
+0inputs+424outputs (0major+7285minor)pagefaults 0swaps
 mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
 mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
 mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
 mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
 mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
 
-real	0m11.987s
-user	0m11.357s
-sys	0m0.232s
+real	0m4.070s
+user	0m3.608s
+sys	0m0.128s
 E	E1	E2	KEFF
-8	8	7	6.436724E-01
-20	21	18	1.146435E+00
-18.00000000000000000000	19	17	1.083663E+00
-18.5205	19	17	STOP
+20	1	38	1.399781E+00
+15.7167	0	30	STOP
 Fin de la recherche d enrichissement
+mv: cannot stat `run/FLUX.db': No such file or directory
 geometry.core.pl 
-88.969730 ./files/DragonCoreGeom_TGE.templ
+115.03980 ./files/DragonCoreGeom_TGE.templ
+cp: cannot stat `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/./files/Lib6G-XMAS172/FC0.M3.db': No such file or directory
 execute core with /home/physor/bin/POLYMTL/VERSION4/Version4_lgpl/Donjon/bin/Linux i686_gfortran/Donjon
 use the existing directory run
 RunDirectory: /tmp/rundir25
@@ -47,42 +33,34 @@ code
 CTDB.db
 DLIB_J3
 DLIB_J3XMAS
-FCIDB.db
 FCODB.db
 FLUX.db
 HEDB.db
 mydata
 REDB.db
 tdraglib access script terminated
-14.47user 0.03system 0:14.59elapsed 99%CPU (0avgtext+0avgdata 119856maxresident)k
-0inputs+1440outputs (0major+8443minor)pagefaults 0swaps
+0.00user 0.00system 0:00.00elapsed 88%CPU (0avgtext+0avgdata 5152maxresident)k
+0inputs+176outputs (0major+372minor)pagefaults 0swaps
 end of execution
 mv: `CTDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/CTDB.db' are the same file
-mv: `FCIDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCIDB.db' are the same file
 mv: `FCODB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FCODB.db' are the same file
 mv: `FLUX.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/FLUX.db' are the same file
 mv: `HEDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/HEDB.db' are the same file
 mv: `REDB.db' and `/home/physor/projects/physor-smr-p02/problem1_TcycleOptim/DragonJddGen/run/REDB.db' are the same file
 the listing is located on ./run
+                                                                            0458
+END: ;                                                                      0459
+QUIT .                                                                  IMPLICIT
 
+1     ERROR IN OPENING OF FILE IN KDROPN
+      FILE NAME = FCIDB.db                                                                
+      FILE TYPE = SEQUENTIAL CHARACTER  
+         IERCOD =       2
+  KERNEL: PROBLEM WHEN OPENING FILE *FCIDB.db                                                                *
+KERNEL: KDROPN FAILURE. IRC= -8                                         
+ KERNEL ERROR CODE=         666
+ DONJON: KERNEL ERROR
+ DESTROY DA FILE = _FIL001       UNIT =         99
 
- TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =       491
-
-->@END MODULE   : EDI:        
--->>TIME SPENT IN MODULE EDI:        :      0.000
-
- @END MODULE -> EDI:        
-
--->>TIME SPENT IN MODULE EDI:        :      0.000
-
-
- @NORMAL END OF EXECUTION FOR DONJON 4  Version 4.0.6 ($Revision: 1666 $)               
- @CHECK FOR WARNINGS IN LISTING
- @BEFORE ASSUMING YOUR RUN WAS SUCCESSFUL
-0	1.080247E+00
-3.650000E+02	1.060159E+00
-7.300000E+02	1.042138E+00
-1.825000E+03	9.975878E-01
-5.475000E+03	9.093604E-01
-1.095000E+04	8.378261E-01
-10.66114048023105171800 18.00000000000000000000 2542.4
+ ABORT REQUESTED.
+13.78508700226115268000 15.00000000000000000000 0
